@@ -3,11 +3,10 @@
 import MemeCoinLaunchpadForm from "../components/features/create-coin-form";
 import { GatewayApiClient } from "@radixdlt/babylon-gateway-api-sdk";
 import { DataRequestBuilder, Logger, RadixDappToolkit, RadixNetwork } from "@radixdlt/radix-dapp-toolkit";
-import { api } from "@/trpc/react";
 
 let rdt: RadixDappToolkit;
 let clientConfig: string;
-let userAccountAddress: string | undefined;
+let userAccountAddress: string;
 
 const xrdAddress =
   "resource_tdx_2_1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxtfd2jc"; //Stokenet XRD resource address
@@ -42,7 +41,7 @@ try {
   rdt.walletApi.walletData$.subscribe((walletData) => {
     console.log("connected wallet data: ", walletData);
     // Set the account variable to the first and only connected account from the wallet
-    userAccountAddress = walletData.accounts[0]?.address;
+    userAccountAddress = walletData.accounts[0].address;
     // console.log("Account: ", account);
   
     // getPoolUnitBalance(); // Update displayed pool unit balance - Defined in Pool Section
@@ -51,10 +50,7 @@ try {
   console.log(e);
 }
 
-export default function Deploy() {
-
-  const a = api.token.createToken.useMutation();
-
+export default function Home() {
 
   async function onCreateNewTokenAndBuyTenPercentRequest({ coinName, coinDescription, logoFile, twitterHandle, investment }: {
     coinName: string;
@@ -63,11 +59,6 @@ export default function Deploy() {
     twitterHandle: string;
     investment: number;
   }) {
-    if (!userAccountAddress) {
-      alert("No user account address connected");
-      return;
-    }
-
     const request = createNewTokenAndBuyTenPercentRequest({
       userAccountAddress: userAccountAddress,
       depositAmount: investment.toString(),
@@ -82,14 +73,6 @@ export default function Deploy() {
     });
 
     console.log("transaction result: ", result);
-
-    a.mutate({
-      symbol: coinName,
-      name: coinName,
-      address: userAccountAddress,
-      iconUrl: '/placeholder.svg',
-      supply: investment,
-    });
   }
   
 

@@ -3,6 +3,8 @@
 import { gatewayApi } from "@/lib/radix/gateway";
 import { GatewayApiClient } from "@radixdlt/babylon-gateway-api-sdk";
 import { DataRequestBuilder, Logger, RadixDappToolkit, RadixNetwork } from "@radixdlt/radix-dapp-toolkit";
+import {api } from "@/trpc/react";
+import MemeCoinLaunchpadForm from "./components/features/create-coin-form";
 
 let rdt: RadixDappToolkit;
 let clientConfig: string;
@@ -52,9 +54,39 @@ try {
 
 export default function Home() {
 
+  async function onCreateNewTokenAndBuyTenPercentRequest({ coinName, coinDescription, logoFile, twitterHandle, investment }: {
+    coinName: string;
+    coinDescription: string;
+    logoFile: File | null;
+    twitterHandle: string;
+    investment: number;
+  }) {
+    const request = createNewTokenAndBuyTenPercentRequest({
+      userAccountAddress: userAccountAddress,
+      depositAmount: investment.toString(),
+      coinName,
+      coinDescription,
+    });
+
+    console.log({ request });
+
+    const result = await rdt.walletApi.sendTransaction({
+      transactionManifest: request,
+    });
+
+    console.log("transaction result: ", result);
+  }
+
+  const a = api.token.createToken.useMutation();
+
+  // a.mutate({})
+
+
   return (
     <div>
       homepage
+
+      <MemeCoinLaunchpadForm onHandleSubmit={onCreateNewTokenAndBuyTenPercentRequest} />
     </div>
   );
 }
