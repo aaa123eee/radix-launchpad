@@ -17,16 +17,11 @@ interface MemeCoinLaunchpadFormProps {
 }
 
 export default function MemeCoinLaunchpadForm({ onHandleSubmit }: MemeCoinLaunchpadFormProps) {
-  const [logoFile, setLogoFile] = useState<File | null>(null)
+  const [logoUrl, setLogoUrl] = useState('')
   const [coinName, setCoinName] = useState('CoinName')
   const [coinDescription, setCoinDescription] = useState('CoinDescription')
   const [twitterHandle, setTwitterHandle] = useState('TwitterHandle')
   const [investment, setInvestment] = useState(100);
-
-  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0] || null
-    setLogoFile(file)
-  }
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
@@ -62,26 +57,22 @@ export default function MemeCoinLaunchpadForm({ onHandleSubmit }: MemeCoinLaunch
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="logo">Logo</Label>
+            <Label htmlFor="logo">Logo URL</Label>
             <div className="flex items-center space-x-2">
               <Input
                 id="logo"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleLogoUpload}
+                type="url"
+                placeholder="https://example.com/logo.png"
+                value={logoUrl}
+                onChange={(e) => setLogoUrl(e.target.value)}
                 required
               />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => document.getElementById('logo')?.click()}
-              >
-                <UploadIcon className="mr-2 h-4 w-4" />
-                {logoFile ? 'Change Logo' : 'Upload Logo'}
-              </Button>
-              {logoFile && <span className="text-sm text-muted-foreground">{logoFile.name}</span>}
             </div>
+            {logoUrl && (
+              <div className="mt-2">
+                <img src={logoUrl} alt="Logo preview" className="w-16 h-16 object-contain" />
+              </div>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="twitter">Twitter Handle</Label>
