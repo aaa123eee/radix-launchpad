@@ -8,22 +8,27 @@ import {
   RadixNetwork,
 } from "@radixdlt/radix-dapp-toolkit";
 import { useEffect } from "react";
+import { atom, useAtom } from "jotai";
 
-let rdt: RadixDappToolkit;
-let clientConfig: string;
-let userAccountAddress: string | undefined;
+export const rdtAtom = atom<RadixDappToolkit | null>(null);
+export const clientConfigAtom = atom<string>("");
+export const userAccountAddressAtom = atom<string | undefined>(undefined);
+export const gatewayApiAtom = atom<GatewayApiClient | null>(null);
 
 export const xrdAddress =
   "resource_tdx_2_1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxtfd2jc"; //Stokenet XRD resource address
 export const launchpadComponentAddress =
   "component_tdx_2_1crqkk8ur44ecxdar96a34fpnd407ful4swhhgk038s5kp8xec38vqp";
 
-export let gatewayApi: GatewayApiClient;
-
 export const RadixProvider = () => {
+  const [, setRdt] = useAtom(rdtAtom);
+  const [, setClientConfig] = useAtom(clientConfigAtom);
+  const [, setUserAccountAddress] = useAtom(userAccountAddressAtom);
+  const [, setGatewayApi] = useAtom(gatewayApiAtom);
+
   useEffect(() => {
     try {
-      rdt = RadixDappToolkit({
+      const rdtInstance = RadixDappToolkit({
         dAppDefinitionAddress:
           "account_tdx_2_12x67lrf9er7euqpfrzsjpa4e8vyck2ywj6jzxdte0szgwe00n2kxpp",
         networkId: RadixNetwork.Stokenet,
@@ -32,7 +37,12 @@ export const RadixProvider = () => {
         logger: Logger(1),
       });
 
-      gatewayApi = GatewayApiClient.initialize(rdt.gatewayApi.clientConfig);
+      setRdt(rdtInstance);
+
+      const gatewayApiInstance = GatewayApiClient.initialize(
+        rdtInstance.gatewayApi.clientConfig,
+      );
+      setGatewayApi(gatewayApiInstance);
 
       // dAppToolkit.walletApi.provideChallengeGenerator(async () => generateRolaChallenge())
 
@@ -41,15 +51,19 @@ export const RadixProvider = () => {
       //   DataRequestBuilder.accounts().atLeast(1),
       // );
 
-      clientConfig = JSON.stringify(rdt.gatewayApi.clientConfig, null, 2);
+      setClientConfig(
+        JSON.stringify(rdtInstance.gatewayApi.clientConfig, null, 2),
+      );
 
       // // ************ Connect to wallet ************
-      rdt.walletApi.setRequestData(DataRequestBuilder.accounts().exactly(1));
+      rdtInstance.walletApi.setRequestData(
+        DataRequestBuilder.accounts().exactly(1),
+      );
       // Subscribe to updates to the user's shared wallet data, then display the account name and address.
-      rdt.walletApi.walletData$.subscribe((walletData) => {
+      rdtInstance.walletApi.walletData$.subscribe((walletData) => {
         console.log("connected wallet data: ", walletData);
         // Set the account variable to the first and only connected account from the wallet
-        userAccountAddress = walletData.accounts[0]?.address;
+        setUserAccountAddress(walletData.accounts[0]?.address);
         // console.log("Account: ", account);
 
         // getPoolUnitBalance(); // Update displayed pool unit balance - Defined in Pool Section
@@ -57,7 +71,7 @@ export const RadixProvider = () => {
     } catch (e) {
       console.log(e);
     }
-  }, []);
+  }, [setRdt, setClientConfig, setUserAccountAddress, setGatewayApi]);
 
   return (
     <head>
