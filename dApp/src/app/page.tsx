@@ -3,6 +3,7 @@
 import MemeCoinLaunchpadForm from "./components/features/create-coin-form";
 import { GatewayApiClient } from "@radixdlt/babylon-gateway-api-sdk";
 import { DataRequestBuilder, Logger, RadixDappToolkit, RadixNetwork } from "@radixdlt/radix-dapp-toolkit";
+import {api } from "@/trpc/react";
 
 let rdt: RadixDappToolkit;
 let clientConfig: string;
@@ -21,20 +22,20 @@ try {
     applicationVersion: '1.0.0',
     logger: Logger(1)
   });
-  
+
   const gatewayApi = GatewayApiClient.initialize(
     rdt.gatewayApi.clientConfig,
   );
-  
+
   // dAppToolkit.walletApi.provideChallengeGenerator(async () => generateRolaChallenge())
-  
+
   // dAppToolkit.walletApi.setRequestData(
   //   DataRequestBuilder.persona().withProof(),
   //   DataRequestBuilder.accounts().atLeast(1),
   // );
-  
+
   clientConfig = JSON.stringify(rdt.gatewayApi.clientConfig, null, 2);
-  
+
   // // ************ Connect to wallet ************
   rdt.walletApi.setRequestData(DataRequestBuilder.accounts().exactly(1));
   // Subscribe to updates to the user's shared wallet data, then display the account name and address.
@@ -43,7 +44,7 @@ try {
     // Set the account variable to the first and only connected account from the wallet
     userAccountAddress = walletData.accounts[0].address;
     // console.log("Account: ", account);
-  
+
     // getPoolUnitBalance(); // Update displayed pool unit balance - Defined in Pool Section
   });
 } catch (e) {
@@ -74,10 +75,14 @@ export default function Home() {
 
     console.log("transaction result: ", result);
   }
-  
+
+  const a = api.token.createToken.useMutation();
+
+  // a.mutate({})
+
 
   return (
-    <div>      
+    <div>
       <div className="flex justify-end">
         <div>
           {/* @ts-expect-error Web Component connected in index.html */}
@@ -97,11 +102,11 @@ interface CreateNewTokenAndBuyTenPercentRequestParams {
   coinDescription: string;
 }
 
-function createNewTokenAndBuyTenPercentRequest({ 
-  userAccountAddress, 
-  depositAmount, 
-  coinName, 
-  coinDescription 
+function createNewTokenAndBuyTenPercentRequest({
+  userAccountAddress,
+  depositAmount,
+  coinName,
+  coinDescription
 }: CreateNewTokenAndBuyTenPercentRequestParams): string {
   return `
 CALL_METHOD

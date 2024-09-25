@@ -9,6 +9,14 @@ export const orderRouter = createTRPCRouter({
       return await ctx.db.order.findMany();
     }),
 
+  getByTokenAddress: publicProcedure
+    .input(z.object({ tokenAddress: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      return ctx.db.order.findMany({
+        where: { tokenAddress: input.tokenAddress },
+      });
+    }),
+
   createOrder: publicProcedure
     .input(
       z.object({

@@ -6,11 +6,27 @@ export const tokenRouter = createTRPCRouter({
   getAll: publicProcedure
     // .input(z.object({ text: z.string() }))
     .query(async ({ ctx }) => {
-      return await ctx.db.token.findMany();
+      return ctx.db.token.findMany();
+    }),
+
+  getByAddress: publicProcedure
+    .input(z.object({ address: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      return ctx.db.token.findUnique({
+        where: { address: input.address },
+      });
     }),
 
   createToken: publicProcedure
-    .input(z.object({ address: z.string().min(1), name: z.string().min(1), symbol: z.string().min(1), iconUrl: z.string().min(1), supply: z.number() }))
+    .input(
+      z.object({
+        address: z.string().min(1),
+        name: z.string().min(1),
+        symbol: z.string().min(1),
+        iconUrl: z.string().min(1),
+        supply: z.number(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       return ctx.db.token.create({
         data: {
