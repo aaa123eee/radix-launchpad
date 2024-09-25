@@ -1,6 +1,8 @@
 use scrypto::prelude::*;
 
 #[blueprint]
+#[events(PoolInstantiatedEvent, TokenSwapEvent)]
+
 mod token_pool {
 
     enable_method_auth! {
@@ -73,6 +75,12 @@ mod token_pool {
             )
             .globalize();
 
+            // Emit an event for token creation
+            Runtime::emit_event(PoolInstantiatedEvent {
+                resource_address: resource_address,
+                component_address: component.address(),
+            });
+
             (component, admin_badge, bucket_with_10_percent, change)
         }
 
@@ -100,6 +108,11 @@ mod token_pool {
                 .checked_div(input_reserves.checked_add(input_amount).unwrap())
                 .unwrap();
 
+            Runtime::emit_event(TokenSwapEvent {
+                input_amount: Decimal::from(input_amount),
+                output_amount: Decimal::from(output_amount),
+            });
+
             self.pool_component.protected_deposit(input_bucket);
             self.pool_component.protected_withdraw(
                 output_resource_address,
@@ -114,6 +127,17 @@ mod token_pool {
     }
 }
 
+#[derive(ScryptoSbor, ScryptoEvent)]
+pub struct PoolInstantiatedEvent {
+    pub resource_address:   ResourceAddress,
+    pub component_address:  ComponentAddress,
+}
+
+#[derive(ScryptoSbor, ScryptoEvent)]
+pub struct TokenSwapEvent {
+    pub input_amount: Decimal,
+    pub output_amount: Decimal,
+}
 
 // use scrypto::prelude::*;
 
