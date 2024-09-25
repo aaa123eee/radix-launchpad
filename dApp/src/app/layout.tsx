@@ -20,7 +20,7 @@ export default function RootLayout({
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script src="https://www.unpkg.com/@radixdlt/radix-dapp-toolkit@2.1.0/dist/radix-dapp-toolkit.bundle.umd.cjs"></script>
       </head>
-      <body> layout
+      <body>
         <header>
         <div className="flex justify-end">
           <div>

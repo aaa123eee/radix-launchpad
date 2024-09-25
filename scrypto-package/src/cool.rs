@@ -1,7 +1,7 @@
 use scrypto::prelude::*;
 
 #[blueprint]
-mod launchpad {
+mod Launchpad {
     use std::collections::HashMap;
 
     enable_method_auth! {
@@ -17,7 +17,9 @@ mod launchpad {
     struct Launchpad {
         // Define what resources and data will be managed by Hello components
         liquidity_pools: HashMap<String, Global<TwoResourcePool>>,
-        lp_tokens: HashMap<String, Vault>,
+        token_vault: Vault,
+        xrd_vault: Vault,
+        lp_tokens: Vault
         fee_vault: Vault,
     }
 

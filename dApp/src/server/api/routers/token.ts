@@ -12,6 +12,7 @@ export const tokenRouter = createTRPCRouter({
   getByAddress: publicProcedure
     .input(z.object({ address: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
+      console.log(input);
       return ctx.db.token.findUnique({
         where: { address: input.address },
       });
