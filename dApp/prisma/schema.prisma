@@ -20,13 +20,14 @@ model Post {
 }
 
 model Token {
-    address         String @id    
+    address         String @id
     name            String
     symbol          String
     createdAt       DateTime @default(now())
     iconUrl         String
     supply          Int
     orders          Order[]
+    components      Component[]
 }
 
 model Order {
@@ -37,4 +38,10 @@ model Order {
     isBuy           Boolean
     price           Int
     amount          Int
+}
+
+model Component {
+    address         String @id
+    token           Token  @relation(fields: [tokenAddress], references: [address])
+    tokenAddress    String
 }
