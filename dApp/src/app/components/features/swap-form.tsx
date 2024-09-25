@@ -52,9 +52,12 @@ export default function SwapForm({ fromToken: initialFromToken, toToken: initial
     }
   };
 
+  const isBuy = fromToken === initialFromToken;
+  const formOutlineColor = isBuy ? 'border-green-500' : 'border-red-500';
+
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-card rounded-xl shadow-lg">
-      <h2 className="text-2xl font-bold mb-6 text-center text-foreground">Swap Tokens</h2>
+    <div className={`w-full max-w-md mx-auto p-6 bg-card rounded-xl shadow-lg border-2 ${formOutlineColor}`}>
+      <h2 className="text-2xl font-bold mb-6 text-center text-foreground">{isBuy ? 'Buy' : 'Sell'} {initialToToken}</h2>
       
       <div className="space-y-4">
         <div>
@@ -69,7 +72,7 @@ export default function SwapForm({ fromToken: initialFromToken, toToken: initial
               onChange={handleFromAmountChange}
               className="flex-grow"
             />
-            <div className="w-[100px] px-3 py-2 border rounded-md bg-background">
+            <div className="w-[120px] px-3 py-2 border rounded-md bg-background truncate">
               {fromToken}
             </div>
           </div>
@@ -93,7 +96,7 @@ export default function SwapForm({ fromToken: initialFromToken, toToken: initial
               className="flex-grow"
               readOnly
             />
-            <div className="w-[100px] px-3 py-2 border rounded-md bg-background">
+            <div className="w-[120px] px-3 py-2 border rounded-md bg-background truncate">
               {toToken}
             </div>
           </div>
