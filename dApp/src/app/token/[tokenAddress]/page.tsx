@@ -1,14 +1,19 @@
 "use client";
 
-import React from "react";
+import React, {useEffect} from "react";
 import { api } from "@/trpc/react";
+import {useAtom} from "jotai/index";
+import {gatewayApiAtom} from "@/app/rdt-provider";
 
 export default function TokenPage({
   params,
 }: {
   params: { tokenAddress: string };
 }) {
+  const [tokenAmounts, setTokenAmounts] = React.useState({token: 0, xrd: 0});
   const tokenAddress = params.tokenAddress;
+
+  const [gatewayApi] = useAtom(gatewayApiAtom);
 
   console.log({ params, tokenAddress });
 
@@ -17,7 +22,37 @@ export default function TokenPage({
       address: params.tokenAddress,
     });
 
-  const {data: componentData, isLoading} = api.component.getByTokenAddress.useQuery({ address: tokenAddress });
+  const { data: componentData, isLoading } =
+    api.component.getByTokenAddress.useQuery({ address: tokenAddress });
+
+  console.log({ componentData });
+
+  useEffect(() => {
+    (async () => {
+      if (!gatewayApi || !componentData || !componentData[0]) {
+        return;
+      }
+
+      const componentAddress = componentData[0].address;
+
+      const componentDetails = await gatewayApi.state.getEntityDetailsVaultAggregated(
+          componentAddress
+      );
+
+      if (!componentDetails) {
+        return;
+      }
+      //@ts-ignore
+      const poolAddress = componentDetails?.details?.state.fields[0].value;
+
+      const poolResp = await gatewayApi.state.getEntityDetailsVaultAggregated(poolAddress);
+
+      const [token, xrd] = poolResp.fungible_resources.items;
+      const xrdAmount = xrd.vaults.items[0].amount;
+      const tokenAmount = token.vaults.items[0].amount;
+      setTokenAmounts({ token: Number(tokenAmount), xrd: Number(xrdAmount) });
+    })();
+  }, [componentData]);
 
   const { data: orders, isLoading: isOrdersLoading } =
     api.order.getByTokenAddress.useQuery({ tokenAddress });
@@ -52,7 +87,7 @@ export default function TokenPage({
               <p>Order ID: {order.address}</p>
               <p>Amount: {order.amount.toString()}</p>
               <p>Price: {order.price.toString()}</p>
-              <p>Type: {order.isBuy ? 'buy' : 'sell'}</p>
+              <p>Type: {order.isBuy ? "buy" : "sell"}</p>
             </li>
           ))}
         </ul>
