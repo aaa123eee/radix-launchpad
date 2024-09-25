@@ -1,7 +1,9 @@
 "use client";
 
-import React, {useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { api } from "@/trpc/react";
+import SwapForm from "@/app/components/features/swap-form";
+import { Copy } from "lucide-react";
 import {useAtom} from "jotai/index";
 import {gatewayApiAtom} from "@/app/rdt-provider";
 
@@ -12,6 +14,7 @@ export default function TokenPage({
 }) {
   const [tokenAmounts, setTokenAmounts] = React.useState({token: 0, xrd: 0});
   const tokenAddress = params.tokenAddress;
+  const [copied, setCopied] = useState(false);
 
   const [gatewayApi] = useAtom(gatewayApiAtom);
 
@@ -57,6 +60,12 @@ export default function TokenPage({
   const { data: orders, isLoading: isOrdersLoading } =
     api.order.getByTokenAddress.useQuery({ tokenAddress });
 
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       {isTokenLoading ? (
@@ -65,7 +74,16 @@ export default function TokenPage({
         <div className="rounded-lg bg-white p-6 shadow-md">
           <h1 className="mb-4 text-3xl font-bold">{token.name}</h1>
           <p className="mb-2 text-xl">Symbol: {token.symbol}</p>
-          <p className="mb-4 text-gray-600">Address: {token.address}</p>
+          <p className="mb-4 text-gray-600 break-all">
+            Address:
+            <span
+              className={`bg-gray-100 px-1 py-0.5 rounded cursor-pointer inline-flex items-center transition-all duration-300 ${copied ? 'bg-green-200' : ''}`}
+              onClick={() => copyToClipboard(token.address)}
+            >
+              {token.address}
+              <Copy className={`ml-1 h-4 w-4 ${copied ? 'text-green-500' : ''}`} />
+            </span>
+          </p>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h2 className="mb-2 text-lg font-semibold">Total Supply</h2>
@@ -76,6 +94,12 @@ export default function TokenPage({
       ) : (
         <p>Token not found</p>
       )}
+
+      <br />
+
+      {token && <SwapForm fromToken="XRD" toToken={token.symbol} price={ '0.5' } />}
+
+      <br />
 
       <h2 className="mb-4 mt-8 text-2xl font-bold">Orders</h2>
       {isOrdersLoading ? (

@@ -60,11 +60,6 @@ export default function Deploy() {
 
       console.log({ poolInstantiatedEvent });
 
-      // createComponent.mutate({
-      //   address: newComponentAddress!,
-      //   tokenAddress: newResourseAddress!,
-      // });
-
       createToken.mutate({
         symbol: coinName,
         name: coinName,
