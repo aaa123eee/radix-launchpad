@@ -46,11 +46,11 @@ export default function TokenPage({
       ) : orders && orders.length > 0 ? (
         <ul className="space-y-4">
           {orders.map((order) => (
-            <li key={order.id} className="rounded-lg bg-gray-100 p-4">
-              <p>Order ID: {order.id}</p>
+            <li key={order.address} className="rounded-lg bg-gray-100 p-4">
+              <p>Order ID: {order.address}</p>
               <p>Amount: {order.amount.toString()}</p>
               <p>Price: {order.price.toString()}</p>
-              <p>Type: {order.type}</p>
+              <p>Type: {order.isBuy ? 'buy' : 'sell'}</p>
             </li>
           ))}
         </ul>

@@ -76,8 +76,14 @@ mod token_pool {
             (component, admin_badge, bucket_with_10_percent, change)
         }
 
-        pub fn swap_tokens(&mut self, input_bucket: Bucket) -> Bucket {
+        pub fn swap_tokens(&mut self, mut input_bucket: Bucket) -> Bucket {
             let mut reserves = self.pool_component.get_vault_amounts();
+
+            // take 5% of the input bucket as fees
+            let input_bucket_amount = input_bucket.amount();
+            let fees = input_bucket_amount * 5 / 100;
+            let fees_bucket = input_bucket.take(fees);
+            self.fees.put(fees_bucket);
 
             let input_amount = input_bucket.amount();
 
@@ -87,6 +93,7 @@ mod token_pool {
             
             let (output_resource_address, output_reserves) = reserves.into_iter().next().unwrap();
 
+            // uniswap v2 formula
             let output_amount = input_amount
                 .checked_mul(output_reserves)
                 .unwrap()
