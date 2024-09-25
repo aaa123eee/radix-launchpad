@@ -55,8 +55,8 @@ export default function Deploy() {
       const details = await gatewayApi.transaction.getCommittedDetails(result.value.transactionIntentHash);
 
       const poolInstantiatedEvent = details.transaction.receipt?.events?.find((item) => item.name === 'PoolInstantiatedEvent');
-      const newResourseAddress = poolInstantiatedEvent?.data.fields.find(item => item.type_name === 'ResourceAddress').value || details.transaction?.affected_global_entities?.[3];
-      const newComponentAddress = poolInstantiatedEvent?.data.fields.find(item => item.type_name === 'ComponentAddress').value;
+      const newResourseAddress = poolInstantiatedEvent?.data.fields.find(item => item.type_name === 'ResourceAddress')?.value || details.transaction?.affected_global_entities?.[3];
+      const newComponentAddress = poolInstantiatedEvent?.data.fields.find(item => item.type_name === 'ComponentAddress')?.value;
 
       console.log({ poolInstantiatedEvent });
 
