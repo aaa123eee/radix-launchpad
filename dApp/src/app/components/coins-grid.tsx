@@ -14,7 +14,7 @@ export default function CoinsGrid({ tokens }: { tokens: {
   return (
     <div className="container mx-auto py-10 px-4">
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {tokens.map(coin => (
+        {tokens.sort((a, b) => a.createdAt > b.createdAt ? 1 : -1).map(coin => (
             <Link href={`/token/${coin.address}`} key={coin.symbol}>
                 <Card className="group overflow-hidden">
                     <CardContent className="p-0 relative aspect-square">
