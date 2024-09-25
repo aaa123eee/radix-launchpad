@@ -6,7 +6,7 @@ import { DataRequestBuilder, Logger, RadixDappToolkit, RadixNetwork } from "@rad
 
 let rdt: RadixDappToolkit;
 let clientConfig: string;
-let userAccountAddress: strin | undefined;
+let userAccountAddress: string | undefined;
 
 const xrdAddress =
   "resource_tdx_2_1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxtfd2jc"; //Stokenet XRD resource address

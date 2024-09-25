@@ -85,7 +85,8 @@ export default function Deploy() {
     a.mutate({
       symbol: coinName,
       name: coinName,
-      address: userAccountAddress,
+      // ToDo: take address from response
+      address: Math.random().toString(),
       iconUrl: '/placeholder.svg',
       supply: investment,
     }, {
