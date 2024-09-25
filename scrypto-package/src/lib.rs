@@ -43,7 +43,7 @@ mod token_pool {
                     init {
                     "name" => name, locked;
                     "symbol" => symbol.clone(), locked;
-                    "icon_url" => icon_url, locked;
+                    "icon_url" => Url::of(icon_url), locked;
                 }
             })
             .mint_initial_supply(100_000_000);
