@@ -1,10 +1,10 @@
 "use client";
 
 import MemeCoinLaunchpadForm from "../components/features/create-coin-form";
+import { useRouter } from 'next/navigation';
 
 import { api } from "@/trpc/react";
 import {
-  launchpadComponentAddress,
   rdtAtom,
   userAccountAddressAtom,
   xrdAddress,
@@ -14,6 +14,7 @@ import {
 import { useAtom } from "jotai/react";
 
 export default function Deploy() {
+  const router = useRouter();
   const [gatewayApi] = useAtom(gatewayApiAtom);
   const [userAccountAddress] = useAtom(userAccountAddressAtom);
   const [rdt] = useAtom(rdtAtom);
@@ -40,7 +41,7 @@ export default function Deploy() {
       logoUrl,
     });
 
-    console.log({ request });
+    
 
     const result = await rdt?.walletApi.sendTransaction({
       transactionManifest: request,
@@ -52,19 +53,24 @@ export default function Deploy() {
 
       const details = await gatewayApi.transaction.getCommittedDetails(result.value.transactionIntentHash);
 
-      // ToDo: depends on contract exec
-      const newResourseAddress = details.transaction?.affected_global_entities?.[3];
+      const poolInstantiatedEvent = details.transaction.receipt?.events?.find((item) => item.name === 'PoolInstantiatedEvent');
+      const newResourseAddress = poolInstantiatedEvent?.data.fields.find(item => item.type_name === 'ResourceAddress').value || details.transaction?.affected_global_entities?.[3];
+
+      console.log({ poolInstantiatedEvent });
 
       a.mutate({
         symbol: coinName,
         name: coinName,
-        // ToDo: take address from response
         address: newResourseAddress!,
         iconUrl: logoUrl,
         supply: investment,
       }, {
         onError: error => {
           console.log({error});
+        },
+        onSuccess: (res) => {
+          console.log('Token creation successful:', res);
+          router.push(`/token/${newResourseAddress}`);
         },
       });
     }
@@ -123,40 +129,3 @@ CALL_METHOD
 ;
   `;
 }
-
-function createNewTokenAndBuyTenPercentRequest({
-  userAccountAddress,
-  depositAmount,
-  coinName,
-  coinDescription
-}: CreateNewTokenAndBuyTenPercentRequestParams): string {
-  return `
-CALL_METHOD
-    Address("${userAccountAddress}")
-    "withdraw"
-    Address("${xrdAddress}")
-    Decimal("${depositAmount}")
-;
-TAKE_FROM_WORKTOP
-    Address("${xrdAddress}")
-    Decimal("${depositAmount}")
-    Bucket("bucket1")
-;
-CALL_METHOD
-    Address("${launchpadComponentAddress}")
-    "create_new_token_and_buy_10_percent"
-    "${coinName}"
-    "${coinDescription}"
-    Bucket("bucket1")
-;
-CALL_METHOD
-    Address("${userAccountAddress}")
-    "try_deposit_batch_or_refund"
-    Expression("ENTIRE_WORKTOP")
-    Enum<0u8>()
-;
-  `;
-}
-
-// todo: handle success and error states
-// todo: make dedicated page for launching
