@@ -14,6 +14,7 @@ export const rdtAtom = atom<RadixDappToolkit | null>(null);
 export const clientConfigAtom = atom<string>("");
 export const userAccountAddressAtom = atom<string | undefined>(undefined);
 export const gatewayApiAtom = atom<GatewayApiClient | null>(null);
+export const packageAddress = 'package_tdx_2_1p40xpyvghxuma2dg2kxeu7809ma85zd8lu7g40cmgsh5ur37cp0qc0';
 
 export const xrdAddress =
   "resource_tdx_2_1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxtfd2jc"; //Stokenet XRD resource address

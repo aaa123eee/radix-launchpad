@@ -3,12 +3,18 @@
 import MemeCoinLaunchpadForm from "../components/features/create-coin-form";
 
 import { api } from "@/trpc/react";
-import { launchpadComponentAddress, rdtAtom, userAccountAddressAtom, xrdAddress } from "../rdt-provider";
+import {
+  launchpadComponentAddress,
+  rdtAtom,
+  userAccountAddressAtom,
+  xrdAddress,
+  packageAddress,
+  gatewayApiAtom
+} from "../rdt-provider";
 import { useAtom } from "jotai/react";
 
-const packageAddress = 'package_tdx_2_1p40xpyvghxuma2dg2kxeu7809ma85zd8lu7g40cmgsh5ur37cp0qc0';
-
 export default function Deploy() {
+  const [gatewayApi] = useAtom(gatewayApiAtom);
   const [userAccountAddress] = useAtom(userAccountAddressAtom);
   const [rdt] = useAtom(rdtAtom);
 
@@ -42,7 +48,7 @@ export default function Deploy() {
 
     console.log("transaction result: ", result);
 
-    if (result.isOk()) {
+    if (result && result.isOk() && gatewayApi) {
 
       const details = await gatewayApi.transaction.getCommittedDetails(result.value.transactionIntentHash);
 
