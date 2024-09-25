@@ -1,6 +1,6 @@
 "use client";
 
-import MemeCoinLaunchpadForm from "./components/features/create-coin-form";
+import MemeCoinLaunchpadForm from "@/components/features/create-coin-form";
 import { GatewayApiClient } from "@radixdlt/babylon-gateway-api-sdk";
 import { DataRequestBuilder, Logger, RadixDappToolkit, RadixNetwork } from "@radixdlt/radix-dapp-toolkit";
 
