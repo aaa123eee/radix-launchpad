@@ -146,6 +146,5 @@ CALL_METHOD
   `;
 }
 
-// todo: add logo to the request
 // todo: handle success and error states
 // todo: make dedicated page for launching

@@ -8,10 +8,6 @@ let rdt: RadixDappToolkit;
 let clientConfig: string;
 let userAccountAddress: string | undefined;
 
-const xrdAddress =
-  "resource_tdx_2_1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxtfd2jc"; //Stokenet XRD resource address
-const launchpadComponentAddress = 'component_tdx_2_1crqkk8ur44ecxdar96a34fpnd407ful4swhhgk038s5kp8xec38vqp';
-
 try {
   rdt = RadixDappToolkit({
     dAppDefinitionAddress:
@@ -57,47 +53,6 @@ export default function Home() {
       homepage
     </div>
   );
-}
-
-interface CreateNewTokenAndBuyTenPercentRequestParams {
-  userAccountAddress: string;
-  depositAmount: string;
-  coinName: string;
-  coinDescription: string;
-}
-
-function createNewTokenAndBuyTenPercentRequest({
-  userAccountAddress,
-  depositAmount,
-  coinName,
-  coinDescription
-}: CreateNewTokenAndBuyTenPercentRequestParams): string {
-  return `
-CALL_METHOD
-    Address("${userAccountAddress}")
-    "withdraw"
-    Address("${xrdAddress}")
-    Decimal("${depositAmount}")
-;
-TAKE_FROM_WORKTOP
-    Address("${xrdAddress}")
-    Decimal("${depositAmount}")
-    Bucket("bucket1")
-;
-CALL_METHOD
-    Address("${launchpadComponentAddress}")
-    "create_new_token_and_buy_10_percent"
-    "${coinName}"
-    "${coinDescription}"
-    Bucket("bucket1")
-;
-CALL_METHOD
-    Address("${userAccountAddress}")
-    "try_deposit_batch_or_refund"
-    Expression("ENTIRE_WORKTOP")
-    Enum<0u8>()
-;
-  `;
 }
 
 // todo: add logo to the request
