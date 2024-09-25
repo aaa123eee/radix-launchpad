@@ -17,6 +17,8 @@ export default function TokenPage({
       address: params.tokenAddress,
     });
 
+  const {data: componentData, isLoading} = api.component.getByTokenAddress.useQuery({ address: tokenAddress });
+
   const { data: orders, isLoading: isOrdersLoading } =
     api.order.getByTokenAddress.useQuery({ tokenAddress });
 

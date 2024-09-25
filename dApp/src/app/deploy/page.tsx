@@ -19,7 +19,8 @@ export default function Deploy() {
   const [userAccountAddress] = useAtom(userAccountAddressAtom);
   const [rdt] = useAtom(rdtAtom);
 
-  const a = api.token.createToken.useMutation();
+  const createToken = api.token.createToken.useMutation();
+  const createComponent = api.component.create.useMutation();
 
   async function onCreateNewTokenAndBuyTenPercentRequest({ coinName, coinDescription, logoUrl, twitterHandle, investment }: {
     coinName: string;
@@ -41,7 +42,7 @@ export default function Deploy() {
       logoUrl,
     });
 
-    
+
 
     const result = await rdt?.walletApi.sendTransaction({
       transactionManifest: request,
@@ -55,10 +56,16 @@ export default function Deploy() {
 
       const poolInstantiatedEvent = details.transaction.receipt?.events?.find((item) => item.name === 'PoolInstantiatedEvent');
       const newResourseAddress = poolInstantiatedEvent?.data.fields.find(item => item.type_name === 'ResourceAddress').value || details.transaction?.affected_global_entities?.[3];
+      const newComponentAddress = poolInstantiatedEvent?.data.fields.find(item => item.type_name === 'ComponentAddress').value;
 
       console.log({ poolInstantiatedEvent });
 
-      a.mutate({
+      createComponent.mutate({
+        address: newComponentAddress!,
+        tokenAddress: newResourseAddress!,
+      });
+
+      createToken.mutate({
         symbol: coinName,
         name: coinName,
         address: newResourseAddress!,
