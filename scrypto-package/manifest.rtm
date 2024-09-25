@@ -1,0 +1,16 @@
+CALL_METHOD
+    Address("component_sim1cptxxxxxxxxxfaucetxxxxxxxxx000527798379xxxxxxxxxhkrefh")
+    "lock_fee"
+    Decimal("5000")
+;
+CALL_FUNCTION
+    Address("package_sim1phetsx3elmknfmm3y2nrrdgn085urejgwnszx03y2ye990df7hj28y")
+    "Launchpad"
+    "instantiate_launchpad"
+;
+CALL_METHOD
+    Address("account_sim1c9lefvku7wmdap4xnrmdk85h7xf0nj6k3q729fnaawvcdfawwehete")
+    "try_deposit_batch_or_refund"
+    Expression("ENTIRE_WORKTOP")
+    Enum<0u8>()
+;
