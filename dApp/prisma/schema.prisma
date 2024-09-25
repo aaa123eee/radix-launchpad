@@ -18,3 +18,23 @@ model Post {
 
     @@index([name])
 }
+
+model Token {
+    address         String @id    
+    name            String
+    symbol          String
+    createdAt       DateTime @default(now())
+    iconUrl         String
+    supply          Int
+    orders          Order[]
+}
+
+model Order {
+    address         String @id
+    token           Token    @relation(fields: [tokenAddress], references: [address])
+    tokenAddress    String
+    createdAt       DateTime @default(now())
+    isBuy           Boolean
+    price           Int
+    amount          Int
+}
