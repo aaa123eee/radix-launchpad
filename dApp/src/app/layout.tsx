@@ -16,8 +16,23 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
-      <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+      <head>
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src="https://www.unpkg.com/@radixdlt/radix-dapp-toolkit@2.1.0/dist/radix-dapp-toolkit.bundle.umd.cjs"></script>
+      </head>
+      <body> layout
+        <header>
+        <div className="flex justify-end">
+          <div>
+            {/* @ts-expect-error Web Component connected in index.html */}
+            <radix-connect-button />
+          </div>
+        </div>
+        </header>
+
+        <main>
+          <TRPCReactProvider>{children}</TRPCReactProvider>
+        </main>
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import MemeCoinLaunchpadForm from "@/components/features/create-coin-form";
+import MemeCoinLaunchpadForm from "../components/features/create-coin-form";
 import { GatewayApiClient } from "@radixdlt/babylon-gateway-api-sdk";
 import { DataRequestBuilder, Logger, RadixDappToolkit, RadixNetwork } from "@radixdlt/radix-dapp-toolkit";
 
@@ -77,14 +77,8 @@ export default function Home() {
   
 
   return (
-    <div>      
-      <div className="flex justify-end">
-        <div>
-          {/* @ts-expect-error Web Component connected in index.html */}
-          <radix-connect-button />
-        </div>
-      </div>
-
+    <div>
+      deploy page
       <MemeCoinLaunchpadForm onHandleSubmit={onCreateNewTokenAndBuyTenPercentRequest} />
     </div>
   );
