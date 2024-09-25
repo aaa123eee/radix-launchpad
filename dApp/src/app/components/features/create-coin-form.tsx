@@ -4,13 +4,13 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
-import { XIcon, UploadIcon } from 'lucide-react'
+import { XIcon } from 'lucide-react'
 
 interface MemeCoinLaunchpadFormProps {
   onHandleSubmit: (formData: {
     coinName: string;
     coinDescription: string;
-    logoFile: File | null;
+    logoUrl: string;
     twitterHandle: string;
     investment: number;
   }) => void;
@@ -18,14 +18,41 @@ interface MemeCoinLaunchpadFormProps {
 
 export default function MemeCoinLaunchpadForm({ onHandleSubmit }: MemeCoinLaunchpadFormProps) {
   const [logoUrl, setLogoUrl] = useState('')
-  const [coinName, setCoinName] = useState('CoinName')
-  const [coinDescription, setCoinDescription] = useState('CoinDescription')
-  const [twitterHandle, setTwitterHandle] = useState('TwitterHandle')
-  const [investment, setInvestment] = useState(100);
+  const [coinName, setCoinName] = useState('')
+  const [coinDescription, setCoinDescription] = useState('')
+  const [twitterHandle, setTwitterHandle] = useState('')
+  const [investment, setInvestment] = useState<number | ''>('')
+  const [errors, setErrors] = useState<{ [key: string]: string }>({})
+
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {}
+
+    if (!coinName.trim()) newErrors.coinName = "Coin Name is required"
+    if (!coinDescription.trim()) newErrors.coinDescription = "Coin Description is required"
+    if (!logoUrl.trim()) newErrors.logoUrl = "Logo URL is required"
+    else if (!isValidUrl(logoUrl)) newErrors.logoUrl = "Please enter a valid URL"
+    if (!twitterHandle.trim()) newErrors.twitterHandle = "Twitter Handle is required"
+    if (!investment) newErrors.investment = "Investment amount is required"
+    else if (isNaN(Number(investment)) || Number(investment) <= 0) newErrors.investment = "Please enter a valid investment amount"
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(url)
+      return true
+    } catch {
+      return false
+    }
+  }
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
-    onHandleSubmit({ coinName, coinDescription, logoFile, twitterHandle, investment })
+    if (validateForm()) {
+      onHandleSubmit({ coinName, coinDescription, logoUrl, twitterHandle, investment: Number(investment) })
+    }
   }
 
   return (
@@ -45,6 +72,7 @@ export default function MemeCoinLaunchpadForm({ onHandleSubmit }: MemeCoinLaunch
               value={coinName}
               onChange={(e) => setCoinName(e.target.value)}
             />
+            {errors.coinName && <p className="text-red-500 text-sm">{errors.coinName}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="coinDescription">Coin Description</Label>
@@ -55,6 +83,7 @@ export default function MemeCoinLaunchpadForm({ onHandleSubmit }: MemeCoinLaunch
               value={coinDescription}
               onChange={(e) => setCoinDescription(e.target.value)}
             />
+            {errors.coinDescription && <p className="text-red-500 text-sm">{errors.coinDescription}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="logo">Logo URL</Label>
@@ -68,7 +97,8 @@ export default function MemeCoinLaunchpadForm({ onHandleSubmit }: MemeCoinLaunch
                 required
               />
             </div>
-            {logoUrl && (
+            {errors.logoUrl && <p className="text-red-500 text-sm">{errors.logoUrl}</p>}
+            {logoUrl && isValidUrl(logoUrl) && (
               <div className="mt-2">
                 <img src={logoUrl} alt="Logo preview" className="w-16 h-16 object-contain" />
               </div>
@@ -87,6 +117,7 @@ export default function MemeCoinLaunchpadForm({ onHandleSubmit }: MemeCoinLaunch
                 onChange={(e) => setTwitterHandle(e.target.value)}
               />
             </div>
+            {errors.twitterHandle && <p className="text-red-500 text-sm">{errors.twitterHandle}</p>}
           </div>
           <div className="space-y-2">
             <Label htmlFor="investment">XRD Investment for 10% Stake</Label>
@@ -100,12 +131,13 @@ export default function MemeCoinLaunchpadForm({ onHandleSubmit }: MemeCoinLaunch
                 className="pr-12"
                 required
                 value={investment}
-                onChange={(e) => setInvestment(Number(e.target.value))}
+                onChange={(e) => setInvestment(e.target.value === '' ? '' : Number(e.target.value))}
               />
               <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
                 XRD
               </span>
             </div>
+            {errors.investment && <p className="text-red-500 text-sm">{errors.investment}</p>}
           </div>
         </form>
       </CardContent>
