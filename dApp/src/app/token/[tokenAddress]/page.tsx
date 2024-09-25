@@ -4,15 +4,15 @@ import React, { useState, useEffect } from "react";
 import { api } from "@/trpc/react";
 import SwapForm from "@/app/components/features/swap-form";
 import { Copy } from "lucide-react";
-import {useAtom} from "jotai/index";
-import {gatewayApiAtom} from "@/app/rdt-provider";
+import { useAtom } from "jotai/index";
+import { gatewayApiAtom } from "@/app/rdt-provider";
 
 export default function TokenPage({
   params,
 }: {
   params: { tokenAddress: string };
 }) {
-  const [tokenAmounts, setTokenAmounts] = React.useState({token: 0, xrd: 0});
+  const [tokenAmounts, setTokenAmounts] = React.useState({ token: 0, xrd: 0 });
   const tokenAddress = params.tokenAddress;
   const [copied, setCopied] = useState(false);
 
@@ -28,8 +28,6 @@ export default function TokenPage({
   const { data: componentData, isLoading } =
     api.component.getByTokenAddress.useQuery({ address: tokenAddress });
 
-  console.log({ componentData });
-
   useEffect(() => {
     (async () => {
       if (!gatewayApi || !componentData || !componentData[0]) {
@@ -38,9 +36,10 @@ export default function TokenPage({
 
       const componentAddress = componentData[0].address;
 
-      const componentDetails = await gatewayApi.state.getEntityDetailsVaultAggregated(
-          componentAddress
-      );
+      const componentDetails =
+        await gatewayApi.state.getEntityDetailsVaultAggregated(
+          componentAddress,
+        );
 
       if (!componentDetails) {
         return;
@@ -48,11 +47,12 @@ export default function TokenPage({
       //@ts-ignore
       const poolAddress = componentDetails?.details?.state.fields[0].value;
 
-      const poolResp = await gatewayApi.state.getEntityDetailsVaultAggregated(poolAddress);
+      const poolResp =
+        await gatewayApi.state.getEntityDetailsVaultAggregated(poolAddress);
 
       const [token, xrd] = poolResp.fungible_resources.items;
-      const xrdAmount = xrd.vaults.items[0].amount;
-      const tokenAmount = token.vaults.items[0].amount;
+      const xrdAmount = xrd?.vaults?.items[0]?.amount;
+      const tokenAmount = token?.vaults?.items[0]?.amount;
       setTokenAmounts({ token: Number(tokenAmount), xrd: Number(xrdAmount) });
     })();
   }, [componentData]);
@@ -74,14 +74,16 @@ export default function TokenPage({
         <div className="rounded-lg bg-white p-6 shadow-md">
           <h1 className="mb-4 text-3xl font-bold">{token.name}</h1>
           <p className="mb-2 text-xl">Symbol: {token.symbol}</p>
-          <p className="mb-4 text-gray-600 break-all">
+          <p className="mb-4 break-all text-gray-600">
             Address:
             <span
-              className={`bg-gray-100 px-1 py-0.5 rounded cursor-pointer inline-flex items-center transition-all duration-300 ${copied ? 'bg-green-200' : ''}`}
+              className={`inline-flex cursor-pointer items-center rounded bg-gray-100 px-1 py-0.5 transition-all duration-300 ${copied ? "bg-green-200" : ""}`}
               onClick={() => copyToClipboard(token.address)}
             >
               {token.address}
-              <Copy className={`ml-1 h-4 w-4 ${copied ? 'text-green-500' : ''}`} />
+              <Copy
+                className={`ml-1 h-4 w-4 ${copied ? "text-green-500" : ""}`}
+              />
             </span>
           </p>
           <div className="grid grid-cols-2 gap-4">
@@ -97,7 +99,9 @@ export default function TokenPage({
 
       <br />
 
-      {token && <SwapForm fromToken="XRD" toToken={token.symbol} price={ '0.5' } />}
+      {token && (
+        <SwapForm fromToken="XRD" toToken={token.symbol} price={"0.5"} />
+      )}
 
       <br />
 
