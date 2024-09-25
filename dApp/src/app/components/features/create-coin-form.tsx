@@ -22,10 +22,10 @@ export default function MemeCoinLaunchpadForm({ onHandleSubmit }: MemeCoinLaunch
   const [coinDescription, setCoinDescription] = useState('')
   const [twitterHandle, setTwitterHandle] = useState('')
   const [investment, setInvestment] = useState<number | ''>('')
-  const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const [errors, setErrors] = useState<Record<string, string>>({})
 
   const validateForm = () => {
-    const newErrors: { [key: string]: string } = {}
+    const newErrors: Record<string, string> = {}
 
     if (!coinName.trim()) newErrors.coinName = "Coin Name is required"
     if (!coinDescription.trim()) newErrors.coinDescription = "Coin Description is required"
