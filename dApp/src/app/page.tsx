@@ -1,13 +1,14 @@
 "use client";
 
-import MemeCoinLaunchpadForm from "./components/features/create-coin-form";
+import { gatewayApi } from "@/lib/radix/gateway";
 import { GatewayApiClient } from "@radixdlt/babylon-gateway-api-sdk";
 import { DataRequestBuilder, Logger, RadixDappToolkit, RadixNetwork } from "@radixdlt/radix-dapp-toolkit";
 import {api } from "@/trpc/react";
+import MemeCoinLaunchpadForm from "./components/features/create-coin-form";
 
 let rdt: RadixDappToolkit;
 let clientConfig: string;
-let userAccountAddress: string;
+let userAccountAddress: strin | undefined;
 
 const xrdAddress =
   "resource_tdx_2_1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxtfd2jc"; //Stokenet XRD resource address
@@ -42,7 +43,7 @@ try {
   rdt.walletApi.walletData$.subscribe((walletData) => {
     console.log("connected wallet data: ", walletData);
     // Set the account variable to the first and only connected account from the wallet
-    userAccountAddress = walletData.accounts[0].address;
+    userAccountAddress = walletData.accounts[0]?.address;
     // console.log("Account: ", account);
 
     // getPoolUnitBalance(); // Update displayed pool unit balance - Defined in Pool Section
@@ -83,12 +84,7 @@ export default function Home() {
 
   return (
     <div>
-      <div className="flex justify-end">
-        <div>
-          {/* @ts-expect-error Web Component connected in index.html */}
-          <radix-connect-button />
-        </div>
-      </div>
+      homepage
 
       <MemeCoinLaunchpadForm onHandleSubmit={onCreateNewTokenAndBuyTenPercentRequest} />
     </div>
