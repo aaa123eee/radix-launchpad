@@ -26,6 +26,7 @@ export const tokenRouter = createTRPCRouter({
         symbol: z.string().min(1),
         iconUrl: z.string().min(1),
         supply: z.number(),
+        componentAddress: z.string().min(1),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -36,6 +37,11 @@ export const tokenRouter = createTRPCRouter({
           symbol: input.symbol,
           iconUrl: input.iconUrl,
           supply: input.supply,
+          component: {
+            create: {
+              address: input.componentAddress,
+            },
+          },
         },
       });
     }),

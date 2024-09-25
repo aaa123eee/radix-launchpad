@@ -27,7 +27,7 @@ model Token {
     iconUrl         String
     supply          Int
     orders          Order[]
-    components      Component[]
+    component       Component?
 }
 
 model Order {
@@ -42,6 +42,6 @@ model Order {
 
 model Component {
     address         String @id
-    token           Token  @relation(fields: [tokenAddress], references: [address])
-    tokenAddress    String
+    token           Token @relation(fields: [tokenAddress], references: [address])
+    tokenAddress    String @unique
 }
