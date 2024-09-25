@@ -1,6 +1,6 @@
 import { GatewayApiClient, RadixNetwork } from "@radixdlt/babylon-gateway-api-sdk";
 import { DataRequestBuilder, Logger, RadixDappToolkit } from "@radixdlt/radix-dapp-toolkit";
-import { atom } from "jotai";
+import { atom, createStore } from "jotai";
 
 const rdt = RadixDappToolkit({
     dAppDefinitionAddress:
@@ -11,7 +11,8 @@ const rdt = RadixDappToolkit({
     logger: Logger(1)
   });
 
-  const userAccountAddress$ = atom<string | undefined>(undefined);
+  const userAccountAddressAtom = atom<string | undefined>(undefined);
+  const store = createStore();
 
   const gatewayApi = GatewayApiClient.initialize(
     rdt.gatewayApi.clientConfig,
@@ -32,7 +33,8 @@ const rdt = RadixDappToolkit({
   rdt.walletApi.walletData$.subscribe((walletData) => {
     console.log("connected wallet data: ", walletData);
     // Set the account variable to the first and only connected account from the wallet
-    userAccountAddress$ = walletData.accounts[0]?.address;
+    
+    store.set(userAccountAddressAtom, () => walletData.accounts[0]?.address);
     // console.log("Account: ", account);
 
     // getPoolUnitBalance(); // Update displayed pool unit balance - Defined in Pool Section
