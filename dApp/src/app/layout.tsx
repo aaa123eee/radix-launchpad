@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "@/trpc/react";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -22,12 +23,33 @@ export default function RootLayout({
       </head>
       <body>
         <header>
-        <div className="flex justify-end">
-          <div>
-            {/* @ts-expect-error Web Component connected in index.html */}
-            <radix-connect-button />
+          <div className="flex justify-end">
+            <div>
+              {/* @ts-expect-error Web Component connected in index.html */}
+              <radix-connect-button />
+            </div>
           </div>
-        </div>
+
+          <nav className="container mx-auto px-4 py-4">
+            <ul className="flex flex-col sm:flex-row justify-start sm:justify-center items-center space-y-2 sm:space-y-0 sm:space-x-6">
+              <li>
+                <Link 
+                  href="/deploy" 
+                  className="text-lg font-medium text-gray-700 hover:text-gray-900 hover:underline transition-colors duration-200"
+                >
+                  Deploy New Token
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  href="/tokens-list" 
+                  className="text-lg font-medium text-gray-700 hover:text-gray-900 hover:underline transition-colors duration-200"
+                >
+                  Tokens List
+                </Link>
+              </li>
+            </ul>
+          </nav>
         </header>
 
         <main>
