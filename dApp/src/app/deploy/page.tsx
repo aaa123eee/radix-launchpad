@@ -55,7 +55,6 @@ export default function Deploy() {
 
   const a = api.token.createToken.useMutation();
 
-
   async function onCreateNewTokenAndBuyTenPercentRequest({ coinName, coinDescription, logoFile, twitterHandle, investment }: {
     coinName: string;
     coinDescription: string;
@@ -89,6 +88,10 @@ export default function Deploy() {
       address: userAccountAddress,
       iconUrl: '/placeholder.svg',
       supply: investment,
+    }, {
+      onError: error => {
+        console.log({error});
+      },
     });
   }
   
