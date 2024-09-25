@@ -56,10 +56,6 @@ export default function CoinsGrid({ tokens }: {
                   <h3 className="text-white text-lg font-bold mb-1">{coin.symbol}</h3>
                   <p className="text-white text-sm mb-2 line-clamp-2">{coin.name}</p>
                   <div className="flex items-center justify-between">
-                    <span className="text-white text-xs flex items-center">
-                      <XIcon className="h-3 w-3 mr-1" />
-                      twitterlink
-                    </span>
                     <span className="text-white text-xs font-semibold">
                       {coin.supply} XRD
                     </span>

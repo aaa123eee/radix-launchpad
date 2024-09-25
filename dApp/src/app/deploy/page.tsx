@@ -6,6 +6,8 @@ import { api } from "@/trpc/react";
 import { launchpadComponentAddress, rdtAtom, userAccountAddressAtom, xrdAddress } from "../rdt-provider";
 import { useAtom } from "jotai/react";
 
+const packageAddress = 'package_tdx_2_1p40xpyvghxuma2dg2kxeu7809ma85zd8lu7g40cmgsh5ur37cp0qc0';
+
 export default function Deploy() {
   const [userAccountAddress] = useAtom(userAccountAddressAtom);
   const [rdt] = useAtom(rdtAtom);
@@ -24,11 +26,12 @@ export default function Deploy() {
       return;
     }
 
-    const request = createNewTokenAndBuyTenPercentRequest({
+    const request = createDeployComponentManifest({
       userAccountAddress: userAccountAddress,
       depositAmount: investment.toString(),
       coinName,
       coinDescription,
+      logoUrl,
     });
 
     console.log({ request });
@@ -39,18 +42,26 @@ export default function Deploy() {
 
     console.log("transaction result: ", result);
 
-    a.mutate({
-      symbol: coinName,
-      name: coinName,
-      // ToDo: take address from response
-      address: Math.random().toString(),
-      iconUrl: logoUrl,
-      supply: investment,
-    }, {
-      onError: error => {
-        console.log({error});
-      },
-    });
+    if (result.isOk()) {
+
+      const details = await gatewayApi.transaction.getCommittedDetails(result.value.transactionIntentHash);
+
+      // ToDo: depends on contract exec
+      const newResourseAddress = details.transaction?.affected_global_entities?.[3];
+
+      a.mutate({
+        symbol: coinName,
+        name: coinName,
+        // ToDo: take address from response
+        address: newResourseAddress!,
+        iconUrl: logoUrl,
+        supply: investment,
+      }, {
+        onError: error => {
+          console.log({error});
+        },
+      });
+    }
   }
 
 
@@ -67,6 +78,44 @@ interface CreateNewTokenAndBuyTenPercentRequestParams {
   depositAmount: string;
   coinName: string;
   coinDescription: string;
+  logoUrl: string;
+}
+
+function createDeployComponentManifest({
+  userAccountAddress,
+  depositAmount,
+  coinName,
+  coinDescription,
+  logoUrl,
+}: CreateNewTokenAndBuyTenPercentRequestParams) {
+  return `
+CALL_METHOD
+    Address("${userAccountAddress}")
+    "withdraw"
+    Address("${xrdAddress}")
+    Decimal("${depositAmount}")
+;
+TAKE_FROM_WORKTOP
+    Address("${xrdAddress}")
+    Decimal("${depositAmount}")
+    Bucket("bucket1")
+;
+CALL_FUNCTION
+    Address("${packageAddress}")
+    "TokenPool"
+    "instantiate_token_pool"
+    "${coinDescription}"
+    "${coinName}"
+    "${logoUrl}"
+    Bucket("bucket1")
+;
+CALL_METHOD
+    Address("${userAccountAddress}")
+    "try_deposit_batch_or_refund"
+    Expression("ENTIRE_WORKTOP")
+    Enum<0u8>()
+;
+  `;
 }
 
 function createNewTokenAndBuyTenPercentRequest({
