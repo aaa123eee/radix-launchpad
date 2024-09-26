@@ -8,6 +8,40 @@ import { useAtom } from "jotai/index";
 import { gatewayApiAtom, rdtAtom, userAccountAddressAtom } from "@/app/rdt-provider";
 import { Api } from "@/lib/radixapi";
 import { xrdAddress } from "@/lib/const";
+import { motion } from "framer-motion";
+
+function MovingBorder({ color, speed }: { color: string; speed: number }) {
+  return (
+    <motion.div
+      className="absolute inset-0"
+      style={{
+        background: `repeating-linear-gradient(
+          45deg,
+          ${color} 0,
+          ${color} 2px,
+          transparent 2px,
+          transparent 8px
+        ),
+        repeating-linear-gradient(
+          -45deg,
+          ${color} 0,
+          ${color} 2px,
+          transparent 2px,
+          transparent 8px
+        )`,
+        backgroundSize: "16px 16px",
+      }}
+      animate={{
+        backgroundPosition: ["0px 0px", "16px 16px"],
+      }}
+      transition={{
+        duration: speed,
+        ease: "linear",
+        repeat: Infinity,
+      }}
+    />
+  )
+}
 
 export default function TokenPage({
   params,
@@ -109,6 +143,22 @@ export default function TokenPage({
     console.log({result});
   }
 
+  function getRandomColor() {
+    return `hsl(${Math.random() * 360}, 100%, 50%)`
+  }
+  
+  function getRandomSpeed() {
+    return Math.random() * 0.9 + 0.3
+  }
+  
+  function getRandomRotation() {
+    return Math.random() * 8 - 4
+  }
+  
+  function getRandomScale() {
+    return Math.random() * 0.1 + 0.95
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       {isTokenLoading ? (
@@ -118,9 +168,12 @@ export default function TokenPage({
           <h1 className="mb-4 text-3xl font-bold">{token.name}</h1>
           <p className="mb-2 text-xl">Symbol: {token.symbol}</p>
 
-          <div className="image-container w-[320px] h-[320px]">
-            <img src={token.iconUrl} alt={`${token.name} logo`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
-          </div>
+          <motion.div className="relative overflow-hidden w-[310px] h-[310px]">
+            <MovingBorder color={getRandomColor()} speed={getRandomSpeed()} />
+            <div className="image-container w-[300px] h-[300px] relative z-10 bg-background m-[4px]">
+              <img src={token.iconUrl} alt={`${token.name} logo`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+            </div>
+          </motion.div>
 
           <p className="mb-4 break-all">
             Address:
