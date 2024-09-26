@@ -63,7 +63,10 @@ export default function TokenPage({
         (el) => el.resourceAddress !== xrdAddress,
       );
 
-      setTokenAmounts({ token: Number(tokenBalance?.balance), xrd: Number(xrdBalance?.balance) });
+      setTokenAmounts({
+        token: Number(tokenBalance?.balance),
+        xrd: Number(xrdBalance?.balance),
+      });
     })();
   }, [componentData, gatewayApi]);
 
