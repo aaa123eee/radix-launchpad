@@ -188,7 +188,7 @@ export default function TokenPage({
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row md:space-x-8">
+      <div className="flex flex-col items-center justify-center md:flex-row md:space-x-8">
         <div className="w-full md:w-1/2">
           {token && (
             <SwapForm
