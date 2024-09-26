@@ -23,7 +23,7 @@ export const orderRouter = createTRPCRouter({
         tokenAddress: z.string().min(1),
         isBuy: z.boolean(),
         price: z.number(),
-        amount: z.number(),
+        amount: z.string(),
         address: z.string().min(1),
       }),
     )
