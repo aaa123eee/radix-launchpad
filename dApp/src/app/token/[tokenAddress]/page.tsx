@@ -15,6 +15,7 @@ import { xrdAddress } from "@/lib/const";
 import { motion } from "framer-motion";
 import { isSwappingAtom } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useSearchParams } from "next/navigation";
 
 function MovingBorder({ color, speed }: { color: string; speed: number }) {
   return (
@@ -64,6 +65,9 @@ export default function TokenPage({
   const [gatewayApi] = useAtom(gatewayApiAtom);
 
   const { toast } = useToast();
+  const searchParams = useSearchParams()
+ 
+  const initialAmount = searchParams.get('amount')
 
   const { data: token, isLoading: isTokenLoading } =
     api.token.getByAddress.useQuery({

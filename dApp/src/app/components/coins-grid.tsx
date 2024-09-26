@@ -8,10 +8,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import Roulette from "./features/roulette";
-import { useToast } from "@/hooks/use-toast";
-import { useAtom } from "jotai";
-import { isSwappingAtom } from "@/lib/utils";
-import { userAccountAddressAtom } from "../rdt-provider";
+import { useRouter } from "next/navigation";
 
 function getRandomColor() {
   return `hsl(${Math.random() * 360}, 100%, 50%)`
@@ -95,9 +92,7 @@ export default function CoinsGrid({ tokens }: {
   const [basket, setBasket] = useState<Token[]>([]);
   const [isBasketAnimating, setIsBasketAnimating] = useState(false);
   const [isBasketOpen, setIsBasketOpen] = useState(false);
-  const [, setIsSwapping] = useAtom(isSwappingAtom);
-  const { toast } = useToast();
-  const [userAccountAddress] = useAtom(userAccountAddressAtom);
+  const router = useRouter();
 
   const addToBasket = (token: Token) => {
     setBasket(prev => [...prev, token]);
@@ -134,8 +129,10 @@ export default function CoinsGrid({ tokens }: {
     );
   }
 
-  async function handleRouletteSelection(item: Token, amount: string): Promise<void> {
-    console.log({ item, amount });
+  async function handleRouletteSelection(item: Token): Promise<void> {
+    setTimeout(() => {
+      router.push(`/token/${item.address}`)
+    }, 5000);
   }
 
   return (

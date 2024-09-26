@@ -13,6 +13,7 @@ interface SwapFormProps {
   toToken: string;
   xrdAmount: number;
   tokenAmount: number;
+  initialAmount?: string;
   onSubmit: (
     fromAmount: string,
     fromToken: string,
@@ -68,9 +69,10 @@ export default function SwapForm({
   toToken: initialToToken,
   tokenAmount,
   xrdAmount,
+  initialAmount,
   onSubmit,
 }: SwapFormProps) {
-  const [fromAmount, setFromAmount] = useState("1");
+  const [fromAmount, setFromAmount] = useState(initialAmount || "1");
   const [toAmount, setToAmount] = useState("");
   const [fromToken, setFromToken] = useState(initialFromToken);
   const [toToken, setToToken] = useState(initialToToken);
