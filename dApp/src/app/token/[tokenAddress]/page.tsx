@@ -188,49 +188,52 @@ export default function TokenPage({
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {token && (
-        <SwapForm
-          fromToken="XRD"
-          toToken={token.symbol}
-          xrdAmount={tokenAmounts.xrd}
-          tokenAmount={tokenAmounts.token}
-          onSubmit={handleSwap}
-        />
-      )}
-
-      <br />
-
-      <div className="rounded-lg p-6 shadow-md">
-        <h1 className="mb-4 text-3xl font-bold">{token.name}</h1>
-        <p className="mb-2 text-xl">Symbol: {token.symbol}</p>
-
-        <motion.div className="relative h-[330px] w-[330px] overflow-hidden">
-          <MovingBorder color={borderColor} speed={borderSpeed} />
-          <div className="image-container relative z-10 m-[10px] h-[310px] w-[310px] bg-background">
-            <img
-              src={token.iconUrl}
-              alt={`${token.name} logo`}
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+      <div className="flex flex-col md:flex-row md:space-x-8">
+        <div className="w-full md:w-1/2">
+          {token && (
+            <SwapForm
+              fromToken="XRD"
+              toToken={token.symbol}
+              xrdAmount={tokenAmounts.xrd}
+              tokenAmount={tokenAmounts.token}
+              onSubmit={handleSwap}
             />
-          </div>
-        </motion.div>
+          )}
+        </div>
+        <div className="mt-8 w-full md:mt-0 md:w-1/2">
+          <div className="rounded-lg p-6 shadow-md">
+            <h1 className="mb-4 text-3xl font-bold">{token.name}</h1>
+            <p className="mb-2 text-xl">Symbol: {token.symbol}</p>
 
-        <p className="mb-4 break-all">
-          Address:
-          <span
-            className={`inline-flex cursor-pointer items-center rounded px-1 py-0.5 transition-all duration-300 ${copied ? "bg-green-200" : ""}`}
-            onClick={() => copyToClipboard(token.address)}
-          >
-            {token.address}
-            <Copy
-              className={`ml-1 h-4 w-4 ${copied ? "text-green-500" : ""}`}
-            />
-          </span>
-        </p>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <h2 className="mb-2 text-lg font-semibold">Total Supply</h2>
-            <p>100000000000</p>
+            <motion.div className="relative h-[330px] w-[330px] overflow-hidden">
+              <MovingBorder color={borderColor} speed={borderSpeed} />
+              <div className="image-container relative z-10 m-[10px] h-[310px] w-[310px] bg-background">
+                <img
+                  src={token.iconUrl}
+                  alt={`${token.name} logo`}
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                />
+              </div>
+            </motion.div>
+
+            <p className="mb-4 break-all">
+              Address:
+              <span
+                className={`inline-flex cursor-pointer items-center rounded px-1 py-0.5 transition-all duration-300 ${copied ? "bg-green-200" : ""}`}
+                onClick={() => copyToClipboard(token.address)}
+              >
+                {token.address}
+                <Copy
+                  className={`ml-1 h-4 w-4 ${copied ? "text-green-500" : ""}`}
+                />
+              </span>
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <h2 className="mb-2 text-lg font-semibold">Total Supply</h2>
+                <p>100000000000</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
