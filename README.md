@@ -3,7 +3,7 @@
 - [Go here to see beautiful dApp code](./dApp)
 - [Go here to see beautiful Scrypto code](./scrypto-package)
 
-![Logo](./logo.svg | height=450)
+<img src="./logo.svg" alt="Logo" width="450" height="450">
 
 [//]: # (https://radix-launchpad.vercel.app/)
 
