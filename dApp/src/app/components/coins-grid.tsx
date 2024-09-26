@@ -61,7 +61,7 @@ export default function CoinsGrid({ tokens }: {
     createdAt: Date;
     address: string;
     iconUrl: string;
-    supply: number;
+    supply: string;
   }[] | undefined;
 }) {
   if (tokens === undefined) {

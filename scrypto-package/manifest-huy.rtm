@@ -1,0 +1,70 @@
+CALL_METHOD
+    Address("component_sim1cptxxxxxxxxxfaucetxxxxxxxxx000527798379xxxxxxxxxhkrefh")
+    "lock_fee"
+    Decimal("5000")
+;
+CALL_METHOD
+    Address("account_sim1cxzmkltyurh7r3mpcreh2hmxsrrmr07djre0zmu78g7hjrggue2wp3f")
+    "withdraw"
+    Address("resource_sim1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxakj8n3")
+    Decimal("100")
+;
+TAKE_FROM_WORKTOP
+    Address("resource_sim1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxakj8n3")
+    Decimal("100")
+    Bucket("bucket1")
+;
+CALL_FUNCTION
+    Address("package_sim1pkg9462mszh5ug8m97m02dyfchpgsmeklpk8vg2x8hvf8wednenv0t")
+    "TokenPool"
+    "instantiate_token_pool"
+    "PEPE22234"
+    "pepe22232523452"
+    "https://img.freepik.com/free-vector/bird-colorful-logo-gradient-vector_343694-1365.jpg?size=338&ext=jpg&ga=GA1.1.1819120589.1727308800&semt=ais_hybrid"
+    Bucket("bucket1")
+    Address("resource_sim1nt9mmxugcujppj6yt0kl7ddenzcks9glz5rwgakpry6dm3nvg7463s")
+;
+CALL_METHOD
+    Address("account_sim1cxzmkltyurh7r3mpcreh2hmsrrmr07djre0zmu78g7hjrggue2wp3f")
+    "try_deposit_batch_or_refund"
+    Expression("ENTIRE_WORKTOP")
+    Enum<0u8>()
+;
+
+
+CALL_METHOD
+    Address("account_tdx_2_12x5pu66kyj4nqunsyj2mc6zhmpmvcazjyyqev6z8yuayy0qhp2vrsa")
+    "withdraw"
+    Address("resource_tdx_2_1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxtfd2jc")
+    Decimal("100")
+;
+TAKE_FROM_WORKTOP
+    Address("resource_tdx_2_1tknxxxxxxxxxradxrdxxxxxxxxx009923554798xxxxxxxxxtfd2jc")
+    Decimal("100")
+    Bucket("bucket1")
+;
+CALL_FUNCTION
+    Address("package_tdx_2_1phacxdfgn42zf4z454swz6mjlt0h2zsuuncntjd60nn93as97x5vw9")
+    "TokenPool"
+    "instantiate_token_pool"
+    "Fest"
+    "Mani"
+    "https://media.istockphoto.com/id/1423550966/vector/profit-rounded-lines-icon.jpg?s=612x612&w=0&k=20&c=_KFEK2PUIlquKGVUYQ18I2rO6xQ3ieFDEx-xHpXRLTI="
+    Bucket("bucket1")
+;
+CALL_FUNCTION
+    Address("package_tdx_2_1phacxdfgn42zf4z454swz6mjlt0h2zsuuncntjd60nn93as97x5vw9")
+    "TokenPool"
+    "instantiate_token_pool"
+    "Fest"
+    "Mani"
+    "https://media.istockphoto.com/id/1423550966/vector/profit-rounded-lines-icon.jpg?s=612x612&w=0&k=20&c=_KFEK2PUIlquKGVUYQ18I2rO6xQ3ieFDEx-xHpXRLTI="
+    Bucket("bucket1")
+    Address("resource_tdx_2_1n2e3qjzqtw4r275r8y7yxka5pvslcuhus0eguqawhw2gl4ygj0h7nt")
+;
+CALL_METHOD
+    Address("account_tdx_2_12x5pu66kyj4nqunsyj2mc6zhmpmvcazjyyqev6z8yuayy0qhp2vrsa")
+    "try_deposit_batch_or_refund"
+    Expression("ENTIRE_WORKTOP")
+    Enum<0u8>()
+;

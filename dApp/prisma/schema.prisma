@@ -25,7 +25,7 @@ model Token {
     symbol          String
     createdAt       DateTime @default(now())
     iconUrl         String
-    supply          Int
+    supply          String
     orders          Order[]
     component       Component?
 }
@@ -37,7 +37,7 @@ model Order {
     createdAt       DateTime @default(now())
     isBuy           Boolean
     price           Int
-    amount          Int
+    amount          String
 }
 
 model Component {
