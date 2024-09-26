@@ -89,7 +89,7 @@ export default function TokenPage({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <h2 className="mb-2 text-lg font-semibold">Total Supply</h2>
-              <p>{token.supply.toString()}</p>
+              <p>100000000000</p>
             </div>
           </div>
         </div>
