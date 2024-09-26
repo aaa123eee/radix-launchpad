@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ArrowDownUp } from "lucide-react"
@@ -9,16 +9,29 @@ import Decimal from 'decimal.js'
 interface SwapFormProps {
   fromToken: string;
   toToken: string;
-  price: string;
+  xrdAmount: number;
+  tokenAmount: number;
 }
 
-export default function SwapForm({ fromToken: initialFromToken, toToken: initialToToken, price }: SwapFormProps) {
-  console.log({initialFromToken, initialToToken, price});
-  
+export default function SwapForm({ fromToken: initialFromToken, toToken: initialToToken, tokenAmount, xrdAmount }: SwapFormProps) {
+  console.log({initialFromToken, initialToToken});
+
   const [fromAmount, setFromAmount] = useState('1');
   const [toAmount, setToAmount] = useState('');
   const [fromToken, setFromToken] = useState(initialFromToken);
   const [toToken, setToToken] = useState(initialToToken);
+
+  const price = useMemo(() => {
+    // Calculate price using constant product formula: x * y = k
+    // Where x is the XRD amount, y is the token amount, and k is the constant product
+    if (xrdAmount && tokenAmount) {
+      const xrd = new Decimal(xrdAmount);
+      const token = new Decimal(tokenAmount);
+      return xrd.div(token).toDecimalPlaces(8).toNumber();
+    }
+    return 0;
+  }, [xrdAmount, tokenAmount]);
+
 
   useEffect(() => {
     if (fromAmount && price) {
@@ -55,7 +68,7 @@ export default function SwapForm({ fromToken: initialFromToken, toToken: initial
   return (
     <div className="w-full max-w-md mx-auto p-6 bg-card rounded-xl shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-center text-foreground">Swap Tokens</h2>
-      
+
       <div className="space-y-4">
         <div>
           <label htmlFor="fromAmount" className="block text-sm font-medium text-muted-foreground mb-1">From</label>

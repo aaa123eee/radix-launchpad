@@ -6,6 +6,8 @@ import SwapForm from "@/app/components/features/swap-form";
 import { Copy } from "lucide-react";
 import { useAtom } from "jotai/index";
 import { gatewayApiAtom } from "@/app/rdt-provider";
+import { Api } from "@/lib/radixapi";
+import { xrdAddress } from "@/lib/const";
 
 export default function TokenPage({
   params,
@@ -17,8 +19,6 @@ export default function TokenPage({
   const [copied, setCopied] = useState(false);
 
   const [gatewayApi] = useAtom(gatewayApiAtom);
-
-  console.log({ params, tokenAddress });
 
   const { data: token, isLoading: isTokenLoading } =
     api.token.getByAddress.useQuery({
@@ -44,16 +44,25 @@ export default function TokenPage({
       if (!componentDetails) {
         return;
       }
+
       //@ts-ignore
-      const poolAddress = componentDetails?.details?.state.fields[0].value;
+      const poolAddress: string = componentDetails?.details?.state?.fields[0].value;
 
-      const poolResp =
-        await gatewayApi.state.getEntityDetailsVaultAggregated(poolAddress);
+      const poolInfo = await Api.getPoolInfo(poolAddress);
 
-      const [token, xrd] = poolResp.fungible_resources.items;
-      const xrdAmount = xrd?.vaults?.items[0]?.amount;
-      const tokenAmount = token?.vaults?.items[0]?.amount;
-      setTokenAmounts({ token: Number(tokenAmount), xrd: Number(xrdAmount) });
+      const resourceBalances = poolInfo.data.map((resource) => ({
+        resourceAddress: resource.resource_address,
+        balance: resource.resource_balance,
+      }));
+
+      const xrdBalance = resourceBalances.find(
+        (el) => el.resourceAddress === xrdAddress,
+      );
+      const tokenBalance = resourceBalances.find(
+        (el) => el.resourceAddress !== xrdAddress,
+      );
+
+      setTokenAmounts({ token: Number(tokenBalance), xrd: Number(xrdBalance) });
     })();
   }, [componentData]);
 
@@ -100,7 +109,12 @@ export default function TokenPage({
       <br />
 
       {token && (
-        <SwapForm fromToken="XRD" toToken={token.symbol} price={"0.5"} />
+        <SwapForm
+          fromToken="XRD"
+          toToken={token.symbol}
+          xrdAmount={tokenAmounts.xrd}
+          tokenAmount={tokenAmounts.token}
+        />
       )}
 
       <br />
