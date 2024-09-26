@@ -6,6 +6,9 @@ import { type Metadata } from "next";
 import { TRPCReactProvider } from "@/trpc/react";
 import Link from "next/link";
 import { RadixProvider } from "./rdt-provider";
+import { ThemeProvider } from "./theme-provider";
+import { ModeToggle } from "@/components/ui/theme-toggle";
+import { Header } from "@/components/header";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -20,39 +23,48 @@ export default function RootLayout({
     <html lang="en" className={`${GeistSans.variable}`}>
       <RadixProvider />
       <body>
-        <header>
-          <div className="flex justify-end">
-            <div>
-              {/* @ts-expect-error Web Component connected in index.html */}
-              <radix-connect-button />
-            </div>
-          </div>
+        <ThemeProvider
+          attribute="class"
+          forcedTheme={"dark"}
+          defaultTheme="dark"
+          enableSystem
+        >
+          {/*<header>*/}
+          {/*  <div className="flex justify-end">*/}
+          {/*    <div>*/}
+          {/*      /!* @ts-expect-error Web Component connected in index.html *!/*/}
+          {/*      <radix-connect-button />*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
 
-          <nav className="container mx-auto px-4 py-4">
-            <ul className="flex flex-col items-center justify-start space-y-2 sm:flex-row sm:justify-center sm:space-x-6 sm:space-y-0">
-              <li>
-                <Link
-                  href="/deploy"
-                  className="text-lg font-medium text-gray-700 transition-colors duration-200 hover:text-gray-900 hover:underline"
-                >
-                  Deploy New Token
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/"
-                  className="text-lg font-medium text-gray-700 transition-colors duration-200 hover:text-gray-900 hover:underline"
-                >
-                  Tokens List
-                </Link>
-              </li>
-            </ul>
-          </nav>
-        </header>
+          {/*  <nav className="container mx-auto px-4 py-4">*/}
+          {/*    <ul className="flex flex-col items-center justify-start space-y-2 sm:flex-row sm:justify-center sm:space-x-6 sm:space-y-0">*/}
+          {/*      <li>*/}
+          {/*        <Link*/}
+          {/*          href="/deploy"*/}
+          {/*          className="text-lg font-medium text-gray-700 transition-colors duration-200 hover:text-gray-900 hover:underline"*/}
+          {/*        >*/}
+          {/*          Deploy New Token*/}
+          {/*        </Link>*/}
+          {/*      </li>*/}
+          {/*      <li>*/}
+          {/*        <Link*/}
+          {/*          href="/"*/}
+          {/*          className="text-lg font-medium text-gray-700 transition-colors duration-200 hover:text-gray-900 hover:underline"*/}
+          {/*        >*/}
+          {/*          Tokens List*/}
+          {/*        </Link>*/}
+          {/*      </li>*/}
+          {/*    </ul>*/}
+          {/*  </nav>*/}
+          {/*  /!*<ModeToggle />*!/*/}
+          {/*</header>*/}
+          <Header />
 
-        <main>
-          <TRPCReactProvider>{children}</TRPCReactProvider>
-        </main>
+          <main>
+            <TRPCReactProvider>{children}</TRPCReactProvider>
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );

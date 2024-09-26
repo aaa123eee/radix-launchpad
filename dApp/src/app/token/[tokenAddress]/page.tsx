@@ -46,7 +46,8 @@ export default function TokenPage({
       }
 
       //@ts-ignore
-      const poolAddress: string = componentDetails?.details?.state?.fields[0].value;
+      const poolAddress: string =
+        componentDetails?.details?.state?.fields[0].value;
 
       const poolInfo = await Api.getPoolInfo(poolAddress);
 
@@ -80,13 +81,13 @@ export default function TokenPage({
       {isTokenLoading ? (
         <p>Loading token information...</p>
       ) : token ? (
-        <div className="rounded-lg bg-white p-6 shadow-md">
+        <div className="rounded-lg p-6 shadow-md">
           <h1 className="mb-4 text-3xl font-bold">{token.name}</h1>
           <p className="mb-2 text-xl">Symbol: {token.symbol}</p>
-          <p className="mb-4 break-all text-gray-600">
+          <p className="mb-4 break-all">
             Address:
             <span
-              className={`inline-flex cursor-pointer items-center rounded bg-gray-100 px-1 py-0.5 transition-all duration-300 ${copied ? "bg-green-200" : ""}`}
+              className={`inline-flex cursor-pointer items-center rounded px-1 py-0.5 transition-all duration-300 ${copied ? "bg-green-200" : ""}`}
               onClick={() => copyToClipboard(token.address)}
             >
               {token.address}

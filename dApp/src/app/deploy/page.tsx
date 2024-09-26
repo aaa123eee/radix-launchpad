@@ -1,7 +1,7 @@
 "use client";
 
 import MemeCoinLaunchpadForm from "../components/features/create-coin-form";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 import { api } from "@/trpc/react";
 import {
@@ -9,7 +9,7 @@ import {
   userAccountAddressAtom,
   xrdAddress,
   packageAddress,
-  gatewayApiAtom
+  gatewayApiAtom,
 } from "../rdt-provider";
 import { useAtom } from "jotai/react";
 
@@ -22,7 +22,13 @@ export default function Deploy() {
   const createToken = api.token.createToken.useMutation();
   const createComponent = api.component.create.useMutation();
 
-  async function onCreateNewTokenAndBuyTenPercentRequest({ coinName, coinDescription, logoUrl, twitterHandle, investment }: {
+  async function onCreateNewTokenAndBuyTenPercentRequest({
+    coinName,
+    coinDescription,
+    logoUrl,
+    twitterHandle,
+    investment,
+  }: {
     coinName: string;
     coinDescription: string;
     logoUrl: string;
@@ -42,8 +48,6 @@ export default function Deploy() {
       logoUrl,
     });
 
-
-
     const result = await rdt?.walletApi.sendTransaction({
       transactionManifest: request,
     });
@@ -51,39 +55,50 @@ export default function Deploy() {
     console.log("transaction result: ", result);
 
     if (result && result.isOk() && gatewayApi) {
+      const details = await gatewayApi.transaction.getCommittedDetails(
+        result.value.transactionIntentHash,
+      );
 
-      const details = await gatewayApi.transaction.getCommittedDetails(result.value.transactionIntentHash);
-
-      const poolInstantiatedEvent = details.transaction.receipt?.events?.find((item) => item.name === 'PoolInstantiatedEvent');
-      const newResourseAddress = poolInstantiatedEvent?.data.fields.find(item => item.type_name === 'ResourceAddress')?.value || details.transaction?.affected_global_entities?.[3];
-      const newComponentAddress = poolInstantiatedEvent?.data.fields.find(item => item.type_name === 'ComponentAddress')?.value;
+      const poolInstantiatedEvent = details.transaction.receipt?.events?.find(
+        (item) => item.name === "PoolInstantiatedEvent",
+      );
+      const newResourseAddress =
+        poolInstantiatedEvent?.data.fields.find(
+          (item) => item.type_name === "ResourceAddress",
+        )?.value || details.transaction?.affected_global_entities?.[3];
+      const newComponentAddress = poolInstantiatedEvent?.data.fields.find(
+        (item) => item.type_name === "ComponentAddress",
+      )?.value;
 
       console.log({ poolInstantiatedEvent });
 
-      createToken.mutate({
-        symbol: coinName,
-        name: coinName,
-        address: newResourseAddress!,
-        iconUrl: logoUrl,
-        supply: 100000000000,
-        componentAddress: newComponentAddress
-      }, {
-        onError: error => {
-          console.log({error});
+      createToken.mutate(
+        {
+          symbol: coinName,
+          name: coinName,
+          address: newResourseAddress!,
+          iconUrl: logoUrl,
+          supply: 100000000000,
+          componentAddress: newComponentAddress,
         },
-        onSuccess: (res) => {
-          console.log('Token creation successful:', res);
-          router.push(`/token/${newResourseAddress}`);
+        {
+          onError: (error) => {
+            console.log({ error });
+          },
+          onSuccess: (res) => {
+            console.log("Token creation successful:", res);
+            router.push(`/token/${newResourseAddress}`);
+          },
         },
-      });
+      );
     }
   }
 
-
   return (
     <div>
-      deploy page
-      <MemeCoinLaunchpadForm onHandleSubmit={onCreateNewTokenAndBuyTenPercentRequest} />
+      <MemeCoinLaunchpadForm
+        onHandleSubmit={onCreateNewTokenAndBuyTenPercentRequest}
+      />
     </div>
   );
 }
