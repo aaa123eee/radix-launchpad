@@ -1,11 +1,12 @@
 "use client"
 
-import React, { useState, useCallback, useRef, useEffect } from 'react'
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react'
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 interface RouletteProps {
   items: Token[];
-  onSelect: (item: string) => void
+  onSelect: (item: Token, amount: string) => void
 }
 
 interface Token {
@@ -24,11 +25,17 @@ function getRandomColor() {
 
 export default function Roulette({ items, onSelect }: RouletteProps) {
   const [spinning, setSpinning] = useState(false)
-  const [selectedItem, setSelectedItem] = useState<string | null>(null)
+  const [selectedItem, setSelectedItem] = useState<Token | null>(null)
+  const [amount, setAmount] = useState<string>('')
   const rouletteRef = useRef<HTMLDivElement>(null)
 
+  const itemsWithColor = useMemo(() => 
+    items.map(item => ({ ...item, color: item.color || getRandomColor() })),
+    [items]
+  )
+
   const spinRoulette = useCallback(() => {
-    if (spinning) return
+    if (spinning || !amount || parseFloat(amount) <= 0) return
 
     setSpinning(true)
     setSelectedItem(null)
@@ -44,15 +51,15 @@ export default function Roulette({ items, onSelect }: RouletteProps) {
 
     setTimeout(() => {
       setSpinning(false)
-      const selectedIndex = Math.floor(Math.random() * items.length)
-      const selected = items[selectedIndex]?.name
+      const selectedIndex = Math.floor(Math.random() * itemsWithColor.length)
+      const selected = itemsWithColor[selectedIndex];
 
       if (!selected) return;
 
-      setSelectedItem(selected)
-      onSelect(selected)
+      setSelectedItem(selected);
+      onSelect(selected, amount);
     }, spinDuration)
-  }, [spinning, items, onSelect])
+  }, [spinning, itemsWithColor, onSelect, amount])
 
   useEffect(() => {
     const roulette = rouletteRef.current
@@ -74,9 +81,9 @@ export default function Roulette({ items, onSelect }: RouletteProps) {
             transformOrigin: 'center center',
           }}
         >
-          {items.map(item => ({ ...item, color: getRandomColor() })).map((item, index) => {
-            const angle = (360 / items.length) * index;
-            const nextAngle = (360 / items.length) * (index + 1);
+          {itemsWithColor.map((item, index) => {
+            const angle = (360 / itemsWithColor.length) * index;
+            const nextAngle = (360 / itemsWithColor.length) * (index + 1);
             return (
               <div
                 key={item.name}
@@ -89,13 +96,13 @@ export default function Roulette({ items, onSelect }: RouletteProps) {
                 <div
                   className="absolute inset-0 flex items-center justify-center"
                   style={{
-                    transform: `rotate(${angle + (360 / items.length / 2)}deg)`,
+                    transform: `rotate(${angle + (360 / itemsWithColor.length / 2)}deg)`,
                   }}
                 >
                   <div
                     className="text-xs font-bold text-white whitespace-nowrap px-2 py-1 bg-black bg-opacity-30 rounded max-w-[80%] overflow-hidden text-center"
                     style={{
-                      transform: `rotate(-${angle + (360 / items.length / 2)}deg)`,
+                      transform: `rotate(-${angle + (360 / itemsWithColor.length / 2)}deg)`,
                     }}
                   >
                     {item.name}
@@ -107,11 +114,21 @@ export default function Roulette({ items, onSelect }: RouletteProps) {
         </div>
         <div className="absolute top-0 left-1/2 w-0 h-0 border-l-8 border-l-transparent border-r-8 border-r-transparent border-t-[16px] border-t-primary transform -translate-x-1/2 z-10" />
       </div>
-      <Button onClick={spinRoulette} disabled={spinning}>
+      <div className="flex items-center space-x-2">
+        <Input
+          type="number"
+          placeholder="Enter XRD amount"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          className="w-40"
+        />
+        <span>XRD</span>
+      </div>
+      <Button onClick={spinRoulette} disabled={spinning || !amount || parseFloat(amount) <= 0}>
         {spinning ? 'Spinning...' : 'Spin'}
       </Button>
       {selectedItem && (
-        <div className="text-lg font-semibold">Selected: {selectedItem}</div>
+        <div className="text-lg font-semibold">Selected: {selectedItem.name}</div>
       )}
     </div>
   )

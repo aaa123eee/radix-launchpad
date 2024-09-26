@@ -128,7 +128,7 @@ export default function CoinsGrid({ tokens }: {
   }
 
   function handleBasketSelection(item: string): void {
-    throw new Error("Function not implemented.");
+    
   }
 
   return (
