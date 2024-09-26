@@ -53,6 +53,8 @@ export default function Deploy() {
         protocol_admin_badge_address
       });
 
+      console.log("request: ", {request});
+
       const result = await rdt?.walletApi.sendTransaction({
         transactionManifest: request,
       });
@@ -141,15 +143,6 @@ CALL_METHOD
 TAKE_FROM_WORKTOP
     Address("${xrdAddress}")
     Decimal("${depositAmount}")
-    Bucket("bucket1")
-;
-CALL_FUNCTION
-    Address("${packageAddress}")
-    "TokenPool"
-    "instantiate_token_pool"
-    "${coinDescription}"
-    "${coinName}"
-    "${logoUrl}"
     Bucket("bucket1")
 ;
 CALL_FUNCTION
