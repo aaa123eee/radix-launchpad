@@ -117,6 +117,11 @@ export default function TokenPage({
         <div className="rounded-lg p-6 shadow-md">
           <h1 className="mb-4 text-3xl font-bold">{token.name}</h1>
           <p className="mb-2 text-xl">Symbol: {token.symbol}</p>
+
+          <div className="image-container w-[320px] h-[320px]">
+            <img src={token.iconUrl} alt={`${token.name} logo`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+          </div>
+
           <p className="mb-4 break-all">
             Address:
             <span
