@@ -13,6 +13,8 @@ import {
 import { Api } from "@/lib/radixapi";
 import { xrdAddress } from "@/lib/const";
 import { motion } from "framer-motion";
+import { isSwappingAtom } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 function MovingBorder({ color, speed }: { color: string; speed: number }) {
   return (
@@ -57,8 +59,11 @@ export default function TokenPage({
   const [copied, setCopied] = useState(false);
   const [userAccountAddress] = useAtom(userAccountAddressAtom);
   const [rdt] = useAtom(rdtAtom);
+  const [, setIsSwapping] = useAtom(isSwappingAtom);
 
   const [gatewayApi] = useAtom(gatewayApiAtom);
+
+  const { toast } = useToast();
 
   const { data: token, isLoading: isTokenLoading } =
     api.token.getByAddress.useQuery({
@@ -86,7 +91,7 @@ export default function TokenPage({
 
       const poolInfo = await Api.getPoolInfo(poolAddress);
 
-      console.log({poolInfo});
+      console.log({ poolInfo });
 
       const resourceBalances = poolInfo.data.map((resource) => ({
         resourceAddress: resource.resource_address,
@@ -117,36 +122,48 @@ export default function TokenPage({
   };
 
   async function handleSwap(fromAmount: string, fromToken: string) {
-    if (
-      !userAccountAddress ||
-      !tokenAddress ||
-      !token ||
-      !token.component?.address
-    ) {
-      return;
+    try {
+      setIsSwapping(true);
+      if (
+        !userAccountAddress ||
+        !tokenAddress ||
+        !token ||
+        !token.component?.address
+      ) {
+        return;
+      }
+
+      const componentAddress = token.component?.address;
+
+      const fromTokenAddress = fromToken === "XRD" ? xrdAddress : tokenAddress;
+
+      const request = createSwapManifest({
+        userAccountAddress,
+        fromTokenAddress,
+        componentAddress,
+        fromAmount,
+      });
+
+      console.log(
+        { request },
+        { userAccountAddress, fromTokenAddress, componentAddress, fromAmount },
+      );
+
+      const result = await rdt?.walletApi.sendTransaction({
+        transactionManifest: request,
+      });
+
+      console.log({ result });
+      toast({
+        title: "Swap successful",
+        description: "Your swap has been successful",
+      });
+    } catch (error) {
+      console.error("Error during swap:", error);
+      // Handle the error appropriately, e.g., show an error message to the user
+    } finally {
+      setIsSwapping(false);
     }
-
-    const componentAddress = token.component?.address;
-
-    const fromTokenAddress = fromToken === "XRD" ? xrdAddress : tokenAddress;
-
-    const request = createSwapManifest({
-      userAccountAddress,
-      fromTokenAddress,
-      componentAddress,
-      fromAmount,
-    });
-
-    console.log(
-      { request },
-      { userAccountAddress, fromTokenAddress, componentAddress, fromAmount },
-    );
-
-    const result = await rdt?.walletApi.sendTransaction({
-      transactionManifest: request,
-    });
-
-    console.log({ result });
   }
 
   const borderColor = useMemo(() => {
@@ -185,7 +202,6 @@ export default function TokenPage({
 
   return (
     <div className="container mx-auto px-4 py-8">
-  
       {token && (
         <SwapForm
           fromToken="XRD"
@@ -195,7 +211,7 @@ export default function TokenPage({
           onSubmit={handleSwap}
         />
       )}
-      
+
       <br />
 
       <div className="rounded-lg p-6 shadow-md">
@@ -232,7 +248,7 @@ export default function TokenPage({
           </div>
         </div>
       </div>
-      
+
       <br />
       <h2 className="mb-4 mt-8 text-2xl font-bold">Orders</h2>
       {isOrdersLoading ? (

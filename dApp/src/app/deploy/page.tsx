@@ -10,10 +10,11 @@ import {
   xrdAddress,
   packageAddress,
   gatewayApiAtom,
-    protocol_admin_badge_address
+  protocol_admin_badge_address,
 } from "../rdt-provider";
 import { useAtom } from "jotai/react";
-import {isDeployingAtom} from "@/lib/utils";
+import { isDeployingAtom } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Deploy() {
   const router = useRouter();
@@ -22,7 +23,8 @@ export default function Deploy() {
   const [rdt] = useAtom(rdtAtom);
   const [, setIsDeploying] = useAtom(isDeployingAtom);
   const createToken = api.token.createToken.useMutation();
-  const createComponent = api.component.create.useMutation();
+
+  const { toast } = useToast();
 
   async function onCreateNewTokenAndBuyTenPercentRequest({
     coinName,
@@ -50,10 +52,10 @@ export default function Deploy() {
         coinName,
         coinDescription,
         logoUrl,
-        protocol_admin_badge_address
+        protocol_admin_badge_address,
       });
 
-      console.log("request: ", {request});
+      console.log("request: ", { request });
 
       const result = await rdt?.walletApi.sendTransaction({
         transactionManifest: request,
@@ -85,7 +87,7 @@ export default function Deploy() {
             name: coinName,
             address: newResourseAddress!,
             iconUrl: logoUrl,
-            supply: '100000000000',
+            supply: "100000000000",
             componentAddress: newComponentAddress,
           },
           {
@@ -95,6 +97,10 @@ export default function Deploy() {
             onSuccess: (res) => {
               console.log("Token creation successful:", res);
               router.push(`/token/${newResourseAddress}`);
+              toast({
+                title: "Token created successfully",
+                description: "Your token has been created successfully",
+              });
             },
           },
         );
