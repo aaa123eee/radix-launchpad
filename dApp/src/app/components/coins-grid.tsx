@@ -135,7 +135,7 @@ export default function CoinsGrid({ tokens }: {
   }
 
   async function handleRouletteSelection(item: Token, amount: string): Promise<void> {
-    
+    console.log({ item, amount });
   }
 
   return (
