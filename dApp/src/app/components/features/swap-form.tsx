@@ -71,6 +71,7 @@ export default function SwapForm({ fromToken: initialFromToken, toToken: initial
   };
 
   useEffect(() => {
+    console.log({xrdAmount, tokenAmount});
     const toAmount = calculateSwapAmount(xrdAmount, tokenAmount, '1', true);
       setToAmount(toAmount.toDecimalPlaces(8).toFixed());
   }, [xrdAmount, tokenAmount]);
