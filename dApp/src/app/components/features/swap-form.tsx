@@ -13,6 +13,45 @@ interface SwapFormProps {
   tokenAmount: number;
 }
 
+function calculateSwapAmount(xrdAmount: number, tokenAmount: number, buyAmount: number, isBuyingToken: boolean): number {
+  const xrd = new Decimal(xrdAmount);
+  const token = new Decimal(tokenAmount);
+  const amount = new Decimal(buyAmount);
+
+  // Constant product formula: x * y = k
+  const k = xrd.mul(token);
+
+  if (isBuyingToken) {
+    // Buying token with XRD
+    const newXrd = xrd.add(amount);
+    const newToken = k.div(newXrd);
+    return token.sub(newToken).toDecimalPlaces(8).toNumber();
+  } else {
+    // Buying XRD with token
+    const newToken = token.add(amount);
+    const newXrd = k.div(newToken);
+    return xrd.sub(newXrd).toDecimalPlaces(8).toNumber();
+  }
+}
+
+// Example usage:
+// 1. Buying token with XRD
+// console.log(calculateSwapAmount(1000, 100, 50, true));
+// This might output something like 4.76190476, meaning you get about 4.76 tokens for 50 XRD
+
+// 2. Buying XRD with token
+// console.log(calculateSwapAmount(1000, 100, 5, false));
+// This might output something like 47.61904762, meaning you get about 47.62 XRD for 5 tokens
+
+// 3. Edge case: Very small amounts
+// console.log(calculateSwapAmount(1000000, 1000000, 0.00001, true));
+// This will show how the function handles very small swap amounts
+
+// 4. Edge case: Very large amounts
+// console.log(calculateSwapAmount(1000000, 1000000, 999999, false));
+// This will show how the function handles very large swap amounts relative to pool size
+
+
 export default function SwapForm({ fromToken: initialFromToken, toToken: initialToToken, tokenAmount, xrdAmount }: SwapFormProps) {
   console.log({initialFromToken, initialToToken});
 
