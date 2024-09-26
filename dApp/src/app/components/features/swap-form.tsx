@@ -70,6 +70,11 @@ export default function SwapForm({ fromToken: initialFromToken, toToken: initial
     onSubmit(fromAmount, fromToken, toAmount, toToken);
   };
 
+  useEffect(() => {
+    const toAmount = calculateSwapAmount(xrdAmount, tokenAmount, '1', true);
+      setToAmount(toAmount.toDecimalPlaces(8).toFixed());
+  }, [xrdAmount, tokenAmount]);
+
   const handleSwapTokens = () => {
     setFromToken(toToken);
     setToToken(fromToken);
@@ -83,7 +88,7 @@ export default function SwapForm({ fromToken: initialFromToken, toToken: initial
     if (regex.test(value) || value === '') {
       setFromAmount(value);
 
-      const toAmount = calculateSwapAmount(xrdAmount, tokenAmount, value, fromToken !== initialFromToken);
+      const toAmount = calculateSwapAmount(xrdAmount, tokenAmount, value, fromToken === initialFromToken);
       setToAmount(toAmount.toDecimalPlaces(8).toFixed());
     }
   };
@@ -94,7 +99,7 @@ export default function SwapForm({ fromToken: initialFromToken, toToken: initial
     if (regex.test(value) || value === '') {
       setToAmount(value);
 
-      const fromAmount = calculateSwapAmount(xrdAmount, tokenAmount, value, toToken === initialToToken);
+      const fromAmount = calculateSwapAmount(xrdAmount, tokenAmount, value, toToken !== initialToToken);
       setFromAmount(fromAmount.toDecimalPlaces(8).toFixed());
     }
   };
