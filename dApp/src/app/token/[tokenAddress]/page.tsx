@@ -5,7 +5,7 @@ import { api } from "@/trpc/react";
 import SwapForm from "@/app/components/features/swap-form";
 import { Copy } from "lucide-react";
 import { useAtom } from "jotai/index";
-import { gatewayApiAtom, userAccountAddressAtom } from "@/app/rdt-provider";
+import { gatewayApiAtom, rdtAtom, userAccountAddressAtom } from "@/app/rdt-provider";
 import { Api } from "@/lib/radixapi";
 import { xrdAddress } from "@/lib/const";
 
@@ -18,6 +18,7 @@ export default function TokenPage({
   const tokenAddress = params.tokenAddress;
   const [copied, setCopied] = useState(false);
   const [userAccountAddress] = useAtom(userAccountAddressAtom);
+  const [rdt] = useAtom(rdtAtom);
 
   const [gatewayApi] = useAtom(gatewayApiAtom);
 
@@ -80,7 +81,7 @@ export default function TokenPage({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  function handleSwap(fromAmount: string, fromToken: string): void {
+  async function handleSwap(fromAmount: string, fromToken: string) {
     if (!userAccountAddress || !tokenAddress || !componentData || !componentData[0]) {
       return;
     }
@@ -89,14 +90,23 @@ export default function TokenPage({
 
     const fromTokenAddress = fromToken === "XRD" ? xrdAddress : tokenAddress;
 
-    const manifest = createSwapManifest({
+    const request = createSwapManifest({
       userAccountAddress,
       fromTokenAddress,
       componentAddress,
       fromAmount,
     });
 
-    console.log(manifest);
+    console.log({request}, {userAccountAddress,
+      fromTokenAddress,
+      componentAddress,
+      fromAmount,});
+
+    const result = await rdt?.walletApi.sendTransaction({
+      transactionManifest: request,
+    });
+
+    console.log({result});
   }
 
   return (
