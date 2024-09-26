@@ -185,6 +185,19 @@ export default function TokenPage({
 
   return (
     <div className="container mx-auto px-4 py-8">
+  
+      {token && (
+        <SwapForm
+          fromToken="XRD"
+          toToken={token.symbol}
+          xrdAmount={tokenAmounts.xrd}
+          tokenAmount={tokenAmounts.token}
+          onSubmit={handleSwap}
+        />
+      )}
+      
+      <br />
+
       <div className="rounded-lg p-6 shadow-md">
         <h1 className="mb-4 text-3xl font-bold">{token.name}</h1>
         <p className="mb-2 text-xl">Symbol: {token.symbol}</p>
@@ -219,17 +232,7 @@ export default function TokenPage({
           </div>
         </div>
       </div>
-
-      <br />
-      {token && (
-        <SwapForm
-          fromToken="XRD"
-          toToken={token.symbol}
-          xrdAmount={tokenAmounts.xrd}
-          tokenAmount={tokenAmounts.token}
-          onSubmit={handleSwap}
-        />
-      )}
+      
       <br />
       <h2 className="mb-4 mt-8 text-2xl font-bold">Orders</h2>
       {isOrdersLoading ? (
