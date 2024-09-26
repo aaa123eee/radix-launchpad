@@ -16,27 +16,17 @@ mod token_pool {
         // Define what resources and data will be managed by Hello components
         pool_component: Global<TwoResourcePool>,
         lp_tokens: Vault,
-        fees: Vault,
+        xrd_fees: Vault,
+        token_fees: Vault,
     }
 
     impl TokenPool {
         // Implement the functions and methods which will manage those resources and data
 
         // This is a function, and can be called directly on the blueprint once deployed
-        pub fn instantiate_token_pool(name: String, symbol: String, icon_url: String, mut input_bucket: Bucket) -> (Global<TokenPool>, Bucket, Bucket, Option<Bucket>) {
-            let admin_badge: Bucket = ResourceBuilder::new_fungible(OwnerRole::None) // #2
-                .divisibility(DIVISIBILITY_NONE)
-                .metadata(metadata!(
-                    init {
-                        "name" => "Admin Badge", locked;
-                    }
-                ))
-                .mint_initial_supply(1)
-                .into();
-
-
+        pub fn instantiate_token_pool(name: String, symbol: String, icon_url: String, mut input_bucket: Bucket, protocol_admin_badge: ResourceAddress) -> (Global<TokenPool>, Bucket, Option<Bucket>) {
             let input_amount = input_bucket.amount();
-            let five_percent = input_amount * 5 / 100;
+            let five_percent = input_amount * 3 / 100;
             let fees_bucket: Bucket = input_bucket.take(five_percent);
 
             let new_fungible_bucket = ResourceBuilder::new_fungible(OwnerRole::None)
@@ -68,11 +58,12 @@ mod token_pool {
             let component = Self {
                 pool_component,
                 lp_tokens: Vault::with_bucket(lp_token_bucket),
-                fees: Vault::with_bucket(fees_bucket),
+                xrd_fees: Vault::with_bucket(fees_bucket),
+                token_fees: Vault::new(resource_address),
             }
             .instantiate()
             .prepare_to_globalize(
-                OwnerRole::Fixed(rule!(require(admin_badge.resource_address())))
+                OwnerRole::Fixed(rule!(require(protocol_admin_badge)))
             )
             .globalize();
 
@@ -82,17 +73,23 @@ mod token_pool {
                 component_address: component.address(),
             });
 
-            (component, admin_badge, bucket_with_10_percent, change)
+            (component, bucket_with_10_percent, change)
         }
 
         pub fn swap_tokens(&mut self, mut input_bucket: Bucket) -> Bucket {
             let mut reserves = self.pool_component.get_vault_amounts();
 
+            
             // take 5% of the input bucket as fees
             let input_bucket_amount = input_bucket.amount();
             let fees = input_bucket_amount * 5 / 100;
             let fees_bucket = input_bucket.take(fees);
-            self.fees.put(fees_bucket);
+
+            if input_bucket.resource_address() == XRD {
+                self.xrd_fees.put(fees_bucket);
+            } else {
+                self.token_fees.put(fees_bucket);
+            };
 
             let input_amount = input_bucket.amount();
 
@@ -122,8 +119,8 @@ mod token_pool {
             )
         }
 
-        pub fn withdraw_fees(&mut self) -> Bucket {
-            self.fees.take_all()
+        pub fn withdraw_fees(&mut self) -> (Bucket, Bucket) {
+            (self.xrd_fees.take_all(), self.token_fees.take_all())
         }
     }
 }

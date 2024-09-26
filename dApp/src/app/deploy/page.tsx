@@ -10,6 +10,7 @@ import {
   xrdAddress,
   packageAddress,
   gatewayApiAtom,
+    protocol_admin_badge_address
 } from "../rdt-provider";
 import { useAtom } from "jotai/react";
 import {isDeployingAtom} from "@/lib/utils";
@@ -49,6 +50,7 @@ export default function Deploy() {
         coinName,
         coinDescription,
         logoUrl,
+        protocol_admin_badge_address
       });
 
       const result = await rdt?.walletApi.sendTransaction({
@@ -118,6 +120,7 @@ interface CreateNewTokenAndBuyTenPercentRequestParams {
   coinName: string;
   coinDescription: string;
   logoUrl: string;
+  protocol_admin_badge_address: string;
 }
 
 function createDeployComponentManifest({
@@ -126,6 +129,7 @@ function createDeployComponentManifest({
   coinName,
   coinDescription,
   logoUrl,
+  protocol_admin_badge_address,
 }: CreateNewTokenAndBuyTenPercentRequestParams) {
   return `
 CALL_METHOD
@@ -147,6 +151,16 @@ CALL_FUNCTION
     "${coinName}"
     "${logoUrl}"
     Bucket("bucket1")
+;
+CALL_FUNCTION
+    Address("${packageAddress}")
+    "TokenPool"
+    "instantiate_token_pool"
+     "${coinDescription}"
+    "${coinName}"
+    "${logoUrl}"
+    Bucket("bucket1")
+    Address("${protocol_admin_badge_address}")
 ;
 CALL_METHOD
     Address("${userAccountAddress}")
