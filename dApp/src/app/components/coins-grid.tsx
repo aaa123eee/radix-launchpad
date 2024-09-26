@@ -6,6 +6,8 @@ import { FrownIcon, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import Roulette from "./features/roulette";
 
 function getRandomColor() {
   return `hsl(${Math.random() * 360}, 100%, 50%)`
@@ -87,6 +89,7 @@ export default function CoinsGrid({ tokens }: {
 }) {
   const [basket, setBasket] = useState<Token[]>([]);
   const [isBasketAnimating, setIsBasketAnimating] = useState(false);
+  const [isBasketOpen, setIsBasketOpen] = useState(false);
 
   const addToBasket = (token: Token) => {
     setBasket(prev => [...prev, token]);
@@ -123,14 +126,19 @@ export default function CoinsGrid({ tokens }: {
     );
   }
 
+  function handleBasketSelection(item: string): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="container mx-auto py-10 px-4">
       <div className="flex justify-end mb-4">
         <AnimatePresence>
           <motion.div
-            className="relative"
+            className="relative cursor-pointer"
             animate={isBasketAnimating ? { scale: [1, 1.2, 1] } : {}}
             transition={{ duration: 0.3 }}
+            onClick={() => setIsBasketOpen(true)}
           >
             <ShoppingCart className="w-8 h-8" />
             <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
@@ -185,7 +193,7 @@ export default function CoinsGrid({ tokens }: {
                     size="sm"
                     onClick={(e) => {
                       e.preventDefault();
-                      addToBasket(coin.symbol);
+                      addToBasket(coin);
                       console.log(`Added ${coin.symbol} to basket`);
                     }}
                   >
@@ -197,6 +205,16 @@ export default function CoinsGrid({ tokens }: {
           </motion.div>
         ))}
       </div>
+      <Dialog open={isBasketOpen} onOpenChange={setIsBasketOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Try your luck</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <Roulette items={basket} onSelect={handleBasketSelection}></Roulette>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
