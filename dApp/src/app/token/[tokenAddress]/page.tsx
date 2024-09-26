@@ -14,7 +14,7 @@ export default function TokenPage({
 }: {
   params: { tokenAddress: string };
 }) {
-  const [tokenAmounts, setTokenAmounts] = React.useState({ token: 0, xrd: 0 });
+  const [tokenAmounts, setTokenAmounts] = useState({ token: 0, xrd: 0 });
   const tokenAddress = params.tokenAddress;
   const [copied, setCopied] = useState(false);
 
@@ -62,9 +62,9 @@ export default function TokenPage({
         (el) => el.resourceAddress !== xrdAddress,
       );
 
-      setTokenAmounts({ token: Number(tokenBalance), xrd: Number(xrdBalance) });
+      setTokenAmounts({ token: Number(tokenBalance?.balance), xrd: Number(xrdBalance?.balance) });
     })();
-  }, [componentData]);
+  }, [componentData, gatewayApi]);
 
   const { data: orders, isLoading: isOrdersLoading } =
     api.order.getByTokenAddress.useQuery({ tokenAddress });

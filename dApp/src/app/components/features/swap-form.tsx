@@ -13,10 +13,10 @@ interface SwapFormProps {
   tokenAmount: number;
 }
 
-function calculateSwapAmount(xrdAmount: number, tokenAmount: number, buyAmount: number, isBuyingToken: boolean): number {
-  const xrd = new Decimal(xrdAmount);
-  const token = new Decimal(tokenAmount);
-  const amount = new Decimal(buyAmount);
+function calculateSwapAmount(xrdAmount: number, tokenAmount: number, buyAmount: string, isBuyingToken: boolean): Decimal {
+  const xrd = new Decimal(xrdAmount || 0);
+  const token = new Decimal(tokenAmount || 0);
+  const amount = new Decimal(buyAmount || 0);
 
   // Constant product formula: x * y = k
   const k = xrd.mul(token);
@@ -25,12 +25,12 @@ function calculateSwapAmount(xrdAmount: number, tokenAmount: number, buyAmount: 
     // Buying token with XRD
     const newXrd = xrd.add(amount);
     const newToken = k.div(newXrd);
-    return token.sub(newToken).toDecimalPlaces(8).toNumber();
+    return token.sub(newToken);
   } else {
     // Buying XRD with token
     const newToken = token.add(amount);
     const newXrd = k.div(newToken);
-    return xrd.sub(newXrd).toDecimalPlaces(8).toNumber();
+    return xrd.sub(newXrd);
   }
 }
 
@@ -53,8 +53,6 @@ function calculateSwapAmount(xrdAmount: number, tokenAmount: number, buyAmount: 
 
 
 export default function SwapForm({ fromToken: initialFromToken, toToken: initialToToken, tokenAmount, xrdAmount }: SwapFormProps) {
-  console.log({initialFromToken, initialToToken});
-
   const [fromAmount, setFromAmount] = useState('1');
   const [toAmount, setToAmount] = useState('');
   const [fromToken, setFromToken] = useState(initialFromToken);
@@ -70,6 +68,11 @@ export default function SwapForm({ fromToken: initialFromToken, toToken: initial
     }
     return 0;
   }, [xrdAmount, tokenAmount]);
+
+  useEffect(() => {
+    const swapAmount = calculateSwapAmount(xrdAmount, tokenAmount, fromAmount, fromToken === initialFromToken);
+    setToAmount(swapAmount.toDecimalPlaces(8).toFixed());
+  }, [xrdAmount, tokenAmount, fromAmount, fromToken, initialFromToken]);
 
 
   useEffect(() => {
@@ -155,7 +158,7 @@ export default function SwapForm({ fromToken: initialFromToken, toToken: initial
         </div>
 
         <div className="text-sm text-muted-foreground">
-          <p>Exchange Rate: 1 {initialFromToken} = { price } {initialToToken}</p>
+          <p>Exchange Rate: 1 {initialToToken} = { price } {initialFromToken}</p>
         </div>
 
         <Button className="w-full" onClick={handleSwap}>
