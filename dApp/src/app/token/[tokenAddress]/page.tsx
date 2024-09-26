@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { api } from "@/trpc/react";
 import SwapForm from "@/app/components/features/swap-form";
 import { Copy, FrownIcon } from "lucide-react";
@@ -149,13 +149,13 @@ export default function TokenPage({
     console.log({ result });
   }
 
-  function getRandomColor() {
+  const borderColor = useMemo(() => {
     return `hsl(${Math.random() * 360}, 100%, 50%)`;
-  }
+  }, []);
 
-  function getRandomSpeed() {
+  const borderSpeed = useMemo(() => {
     return Math.random() * 0.9 + 0.3;
-  }
+  }, []);
 
   function getRandomRotation() {
     return Math.random() * 8 - 4;
@@ -190,7 +190,7 @@ export default function TokenPage({
         <p className="mb-2 text-xl">Symbol: {token.symbol}</p>
 
         <motion.div className="relative h-[330px] w-[330px] overflow-hidden">
-          <MovingBorder color={getRandomColor()} speed={getRandomSpeed()} />
+          <MovingBorder color={borderColor} speed={borderSpeed} />
           <div className="image-container relative z-10 m-[10px] h-[310px] w-[310px] bg-background">
             <img
               src={token.iconUrl}
