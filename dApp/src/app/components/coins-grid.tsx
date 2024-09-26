@@ -1,9 +1,10 @@
 "use client"
 
+import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { FrownIcon, ShoppingCart } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 
 function getRandomColor() {
@@ -55,16 +56,44 @@ function MovingBorder({ color, speed }: { color: string; speed: number }) {
   )
 }
 
+const Firework = () => (
+  <motion.div
+    className="absolute w-2 h-2 bg-yellow-400 rounded-full"
+    initial={{ scale: 0 }}
+    animate={{
+      scale: [0, 1.5, 0],
+      opacity: [1, 1, 0],
+      x: [0, (Math.random() - 0.5) * 300],
+      y: [0, (Math.random() - 0.5) * 300 - 100], // Subtract 100 to start higher
+    }}
+    transition={{ 
+      duration: 1.5, // Increased duration for slower animation
+      ease: [0.45, 0, 0.55, 1], // Custom cubic-bezier curve for gravitational effect
+    }}
+  />
+)
+
+interface Token {
+  symbol: string;
+  name: string;
+  createdAt: Date;
+  address: string;
+  iconUrl: string;
+  supply: string;
+}
+
 export default function CoinsGrid({ tokens }: { 
-  tokens: {
-    symbol: string;
-    name: string;
-    createdAt: Date;
-    address: string;
-    iconUrl: string;
-    supply: string;
-  }[] | undefined;
+  tokens: Token[] | undefined;
 }) {
+  const [basket, setBasket] = useState<Token[]>([]);
+  const [isBasketAnimating, setIsBasketAnimating] = useState(false);
+
+  const addToBasket = (token: Token) => {
+    setBasket(prev => [...prev, token]);
+    setIsBasketAnimating(true);
+    setTimeout(() => setIsBasketAnimating(false), 1500); // Increased timeout to match new animation duration
+  };
+
   if (tokens === undefined) {
     return (
       <div className="container mx-auto py-10 px-4">
@@ -96,6 +125,27 @@ export default function CoinsGrid({ tokens }: {
 
   return (
     <div className="container mx-auto py-10 px-4">
+      <div className="flex justify-end mb-4">
+        <AnimatePresence>
+          <motion.div
+            className="relative"
+            animate={isBasketAnimating ? { scale: [1, 1.2, 1] } : {}}
+            transition={{ duration: 0.3 }}
+          >
+            <ShoppingCart className="w-8 h-8" />
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
+              {basket.length}
+            </span>
+            {isBasketAnimating && (
+              <>
+                {[...Array(25)].map((_, index) => (
+                  <Firework key={index} />
+                ))}
+              </>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {tokens.sort((a, b) => a.createdAt > b.createdAt ? 1 : -1).map(coin => (
           <motion.div
@@ -135,7 +185,7 @@ export default function CoinsGrid({ tokens }: {
                     size="sm"
                     onClick={(e) => {
                       e.preventDefault();
-                      // Add to basket logic here
+                      addToBasket(coin.symbol);
                       console.log(`Added ${coin.symbol} to basket`);
                     }}
                   >
