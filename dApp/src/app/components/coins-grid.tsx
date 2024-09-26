@@ -18,11 +18,11 @@ function getRandomSpeed() {
 }
 
 function getRandomRotation() {
-  return Math.random() * 8 - 4
+  return Math.random() * 4 - 2 // Reduced from 8 to 4
 }
 
 function getRandomScale() {
-  return Math.random() * 0.1 + 0.95
+  return Math.random() * 0.05 + 0.975 // Reduced from 0.1 to 0.05
 }
 
 function MovingBorder({ color, speed }: { color: string; speed: number }) {
@@ -82,6 +82,7 @@ interface Token {
   address: string;
   iconUrl: string;
   supply: string;
+  color?: string;
 }
 
 export default function CoinsGrid({ tokens }: { 
@@ -136,7 +137,7 @@ export default function CoinsGrid({ tokens }: {
         <AnimatePresence>
           <motion.div
             className="relative cursor-pointer"
-            animate={isBasketAnimating ? { scale: [1, 1.2, 1] } : {}}
+            animate={isBasketAnimating ? { scale: [1, 1.1, 1] } : {}} // Reduced from 1.2 to 1.1
             transition={{ duration: 0.3 }}
             onClick={() => setIsBasketOpen(true)}
           >
@@ -155,7 +156,7 @@ export default function CoinsGrid({ tokens }: {
         </AnimatePresence>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-        {tokens.sort((a, b) => a.createdAt > b.createdAt ? 1 : -1).map(coin => (
+        {tokens.sort((a, b) => a.createdAt > b.createdAt ? 1 : -1).map(coin => ({ ...coin, color: getRandomColor() })).map(coin => (
           <motion.div
             key={coin.symbol}
             className="relative overflow-hidden"
@@ -164,21 +165,21 @@ export default function CoinsGrid({ tokens }: {
               scale: getRandomScale(),
             }}
             whileHover={{
-              rotate: [0, 4, -4, 4, -4, 2, -2, 0],
-              scale: [1, 0.95, 1.05, 0.95, 1.05, 1],
+              rotate: [0, 2, -2, 2, -2, 1, -1, 0], // Reduced rotation angles
+              scale: [1, 0.975, 1.025, 0.975, 1.025, 1], // Reduced scale values
               transition: { duration: 0.3, repeat: Infinity },
             }}
           >
-            <MovingBorder color={getRandomColor()} speed={getRandomSpeed()} />
+            <MovingBorder color={coin.color} speed={getRandomSpeed()} />
             <motion.div>
               <Card className="group overflow-hidden relative z-10 bg-background m-[4px]">
                 <CardContent className="p-0 relative aspect-square">
                   <Link href={`/token/${coin.address}`}>
-                    <img src={coin.iconUrl} alt={`${coin.name} logo`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                    <img src={coin.iconUrl} alt={`${coin.name} logo`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" /> {/* Reduced scale from 110% to 105% */}
                     <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black to-transparent p-4">
                       <h3 className="text-white text-lg font-bold mb-1 group-hover:invisible">{coin.symbol}</h3>
                     </div>
-                    <div className="absolute inset-0 bg-black bg-opacity-70 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4 translate-y-4 group-hover:translate-y-0">
+                    <div className="absolute inset-0 bg-black bg-opacity-70 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4 translate-y-2 group-hover:translate-y-0"> {/* Reduced translate-y from 4 to 2 */}
                       <h3 className="text-white text-lg font-bold mb-1">{coin.symbol}</h3>
                       <p className="text-white text-sm mb-2 line-clamp-2">{coin.name}</p>
                       <div className="flex items-center justify-between">
