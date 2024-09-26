@@ -25,7 +25,7 @@ export const tokenRouter = createTRPCRouter({
         name: z.string().min(1),
         symbol: z.string().min(1),
         iconUrl: z.string().min(1),
-        supply: z.number(),
+        supply: z.string(),
         componentAddress: z.string().min(1),
       }),
     )

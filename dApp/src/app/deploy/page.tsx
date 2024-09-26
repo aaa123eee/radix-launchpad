@@ -85,7 +85,7 @@ export default function Deploy() {
             name: coinName,
             address: newResourseAddress!,
             iconUrl: logoUrl,
-            supply: 100000000000,
+            supply: '100000000000',
             componentAddress: newComponentAddress,
           },
           {
