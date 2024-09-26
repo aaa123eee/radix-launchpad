@@ -168,9 +168,9 @@ export default function TokenPage({
           <h1 className="mb-4 text-3xl font-bold">{token.name}</h1>
           <p className="mb-2 text-xl">Symbol: {token.symbol}</p>
 
-          <motion.div className="relative overflow-hidden w-[310px] h-[310px]">
+          <motion.div className="relative overflow-hidden w-[330px] h-[330px]">
             <MovingBorder color={getRandomColor()} speed={getRandomSpeed()} />
-            <div className="image-container w-[300px] h-[300px] relative z-10 bg-background m-[4px]">
+            <div className="image-container w-[310px] h-[310px] relative z-10 bg-background m-[10px]">
               <img src={token.iconUrl} alt={`${token.name} logo`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110" />
             </div>
           </motion.div>
