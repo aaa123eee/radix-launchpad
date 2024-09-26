@@ -74,12 +74,12 @@ export default function Deploy() {
 
         // @ts-ignore
         const newResourseAddress = poolInstantiatedEvent?.data.fields?.find(
-          (item) => item.type_name === "ResourceAddress",
+          (item: {type_name: string, value: string}) => item.type_name === "ResourceAddress",
         )?.value || details.transaction?.affected_global_entities?.[3];
         
         // @ts-ignore
         const newComponentAddress = poolInstantiatedEvent?.data.fields?.find(
-          (item) => item.type_name === "ComponentAddress",
+          (item: {type_name: string, value: string}) => item.type_name === "ComponentAddress",
         )?.value;
 
         console.log({ poolInstantiatedEvent });
