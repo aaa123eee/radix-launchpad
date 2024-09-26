@@ -86,29 +86,15 @@ export default function TokenPage({
       }
 
       //@ts-ignore
-      const poolAddress: string =
-        componentDetails?.details?.state?.fields[0].value;
+      const poolAddress = componentDetails?.details?.state.fields[0].value;
 
-      const poolInfo = await Api.getPoolInfo(poolAddress);
+      const poolResp =
+          await gatewayApi.state.getEntityDetailsVaultAggregated(poolAddress);
 
-      console.log({ poolInfo });
-
-      const resourceBalances = poolInfo.data.map((resource) => ({
-        resourceAddress: resource.resource_address,
-        balance: resource.resource_balance,
-      }));
-
-      const xrdBalance = resourceBalances.find(
-        (el) => el.resourceAddress === xrdAddress,
-      );
-      const tokenBalance = resourceBalances.find(
-        (el) => el.resourceAddress !== xrdAddress,
-      );
-
-      setTokenAmounts({
-        token: Number(tokenBalance?.balance),
-        xrd: Number(xrdBalance?.balance),
-      });
+      const [token, xrd] = poolResp.fungible_resources.items;
+      const xrdAmount = xrd?.vaults?.items[0]?.amount;
+      const tokenAmount = token?.vaults?.items[0]?.amount;
+      setTokenAmounts({ token: Number(tokenAmount), xrd: Number(xrdAmount) });
     })();
   }, [gatewayApi, token]);
 
