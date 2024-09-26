@@ -91,9 +91,9 @@ export default function TokenPage({
       const poolResp =
           await gatewayApi.state.getEntityDetailsVaultAggregated(poolAddress);
 
-      const [token, xrd] = poolResp.fungible_resources.items;
+      const [apiToken, xrd] = poolResp.fungible_resources.items;
       const xrdAmount = xrd?.vaults?.items[0]?.amount;
-      const tokenAmount = token?.vaults?.items[0]?.amount;
+      const tokenAmount = apiToken?.vaults?.items[0]?.amount;
       setTokenAmounts({ token: Number(tokenAmount), xrd: Number(xrdAmount) });
     })();
   }, [gatewayApi, token]);
