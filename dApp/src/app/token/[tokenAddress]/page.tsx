@@ -53,6 +53,8 @@ export default function TokenPage({
 
       const poolInfo = await Api.getPoolInfo(poolAddress);
 
+      console.log({poolInfo});
+
       const resourceBalances = poolInfo.data.map((resource) => ({
         resourceAddress: resource.resource_address,
         balance: resource.resource_balance,
