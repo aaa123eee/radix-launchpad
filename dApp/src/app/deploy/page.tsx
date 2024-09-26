@@ -71,10 +71,13 @@ export default function Deploy() {
         const poolInstantiatedEvent = details.transaction.receipt?.events?.find(
           (item) => item.name === "PoolInstantiatedEvent",
         );
-        const newResourseAddress =
-          poolInstantiatedEvent?.data.fields?.find(
-            (item) => item.type_name === "ResourceAddress",
-          )?.value || details.transaction?.affected_global_entities?.[3];
+
+        // @ts-ignore
+        const newResourseAddress = poolInstantiatedEvent?.data.fields?.find(
+          (item) => item.type_name === "ResourceAddress",
+        )?.value || details.transaction?.affected_global_entities?.[3];
+        
+        // @ts-ignore
         const newComponentAddress = poolInstantiatedEvent?.data.fields?.find(
           (item) => item.type_name === "ComponentAddress",
         )?.value;
@@ -87,7 +90,7 @@ export default function Deploy() {
             name: coinName,
             address: newResourseAddress!,
             iconUrl: logoUrl,
-            supply: "100000000000",
+            supply: '100000000000',
             componentAddress: newComponentAddress,
           },
           {
