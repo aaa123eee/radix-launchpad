@@ -219,7 +219,7 @@ export default function TokenPage({
           </div>
         </div>
       </div>
-      )
+
       <br />
       {token && (
         <SwapForm
