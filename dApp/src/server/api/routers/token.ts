@@ -14,6 +14,9 @@ export const tokenRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       console.log(input);
       return ctx.db.token.findUnique({
+        include: {
+          component: true,
+        },
         where: { address: input.address },
       });
     }),
