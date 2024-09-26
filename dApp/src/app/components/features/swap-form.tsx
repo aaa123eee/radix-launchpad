@@ -11,6 +11,7 @@ interface SwapFormProps {
   toToken: string;
   xrdAmount: number;
   tokenAmount: number;
+  onSubmit: (fromAmount: string, fromToken: string, toAmount: string, toToken: string) => void;
 }
 
 function calculateSwapAmount(xrdAmount: number, tokenAmount: number, buyAmount: string, isBuyingToken: boolean): Decimal {
@@ -33,7 +34,6 @@ function calculateSwapAmount(xrdAmount: number, tokenAmount: number, buyAmount: 
     return xrd.sub(newXrd);
   }
 }
-
 // Example usage:
 // 1. Buying token with XRD
 // console.log(calculateSwapAmount(1000, 100, 50, true));
@@ -51,16 +51,13 @@ function calculateSwapAmount(xrdAmount: number, tokenAmount: number, buyAmount: 
 // console.log(calculateSwapAmount(1000000, 1000000, 999999, false));
 // This will show how the function handles very large swap amounts relative to pool size
 
-
-export default function SwapForm({ fromToken: initialFromToken, toToken: initialToToken, tokenAmount, xrdAmount }: SwapFormProps) {
+export default function SwapForm({ fromToken: initialFromToken, toToken: initialToToken, tokenAmount, xrdAmount, onSubmit }: SwapFormProps) {
   const [fromAmount, setFromAmount] = useState('1');
   const [toAmount, setToAmount] = useState('');
   const [fromToken, setFromToken] = useState(initialFromToken);
   const [toToken, setToToken] = useState(initialToToken);
 
   const price = useMemo(() => {
-    // Calculate price using constant product formula: x * y = k
-    // Where x is the XRD amount, y is the token amount, and k is the constant product
     if (xrdAmount && tokenAmount) {
       const xrd = new Decimal(xrdAmount);
       const token = new Decimal(tokenAmount);
@@ -69,34 +66,15 @@ export default function SwapForm({ fromToken: initialFromToken, toToken: initial
     return 0;
   }, [xrdAmount, tokenAmount]);
 
-  useEffect(() => {
-    const swapAmount = calculateSwapAmount(xrdAmount, tokenAmount, fromAmount, fromToken === initialFromToken);
-    setToAmount(swapAmount.toDecimalPlaces(8).toFixed());
-  }, [xrdAmount, tokenAmount, fromAmount, fromToken, initialFromToken]);
-
-
-  useEffect(() => {
-    if (fromAmount && price) {
-      const from = new Decimal(fromAmount);
-      const priceDecimal = new Decimal(price);
-      const to = fromToken === initialFromToken
-        ? from.div(priceDecimal)
-        : from.mul(priceDecimal);
-      setToAmount(to.toDecimalPlaces(8).toFixed());
-    } else {
-      setToAmount('');
-    }
-  }, [fromAmount, price, fromToken, initialFromToken]);
-
   const handleSwap = () => {
-    // Here you would typically interact with a smart contract
-    console.log(`Swapping ${fromAmount} ${fromToken} for ${toAmount} ${toToken}`);
+    onSubmit(fromAmount, fromToken, toAmount, toToken);
   };
 
   const handleSwapTokens = () => {
     setFromToken(toToken);
     setToToken(fromToken);
     setFromAmount(toAmount);
+    setToAmount(fromAmount);
   };
 
   const handleFromAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,6 +82,20 @@ export default function SwapForm({ fromToken: initialFromToken, toToken: initial
     const regex = /^\d*\.?\d{0,8}$/;
     if (regex.test(value) || value === '') {
       setFromAmount(value);
+
+      const toAmount = calculateSwapAmount(xrdAmount, tokenAmount, value, fromToken !== initialFromToken);
+      setToAmount(toAmount.toDecimalPlaces(8).toFixed());
+    }
+  };
+
+  const handleToAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const regex = /^\d*\.?\d{0,8}$/;
+    if (regex.test(value) || value === '') {
+      setToAmount(value);
+
+      const fromAmount = calculateSwapAmount(xrdAmount, tokenAmount, value, toToken === initialToToken);
+      setFromAmount(fromAmount.toDecimalPlaces(8).toFixed());
     }
   };
 
@@ -148,8 +140,8 @@ export default function SwapForm({ fromToken: initialFromToken, toToken: initial
               inputMode="decimal"
               placeholder="0.0"
               value={toAmount}
+              onChange={handleToAmountChange}
               className="flex-grow"
-              readOnly
             />
             <div className="w-[120px] px-3 py-2 border rounded-md bg-background truncate">
               {toToken}
@@ -168,4 +160,3 @@ export default function SwapForm({ fromToken: initialFromToken, toToken: initial
     </div>
   )
 }
-

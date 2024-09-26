@@ -5,7 +5,7 @@ import { api } from "@/trpc/react";
 import SwapForm from "@/app/components/features/swap-form";
 import { Copy } from "lucide-react";
 import { useAtom } from "jotai/index";
-import { gatewayApiAtom } from "@/app/rdt-provider";
+import { gatewayApiAtom, userAccountAddressAtom } from "@/app/rdt-provider";
 import { Api } from "@/lib/radixapi";
 import { xrdAddress } from "@/lib/const";
 
@@ -17,6 +17,7 @@ export default function TokenPage({
   const [tokenAmounts, setTokenAmounts] = useState({ token: 0, xrd: 0 });
   const tokenAddress = params.tokenAddress;
   const [copied, setCopied] = useState(false);
+  const [userAccountAddress] = useAtom(userAccountAddressAtom);
 
   const [gatewayApi] = useAtom(gatewayApiAtom);
 
@@ -79,6 +80,25 @@ export default function TokenPage({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  function handleSwap(fromAmount: string, fromToken: string): void {
+    if (!userAccountAddress || !tokenAddress || !componentData || !componentData[0]) {
+      return;
+    }
+
+    const componentAddress = componentData[0].address;
+
+    const fromTokenAddress = fromToken === "XRD" ? xrdAddress : tokenAddress;
+
+    const manifest = createSwapManifest({
+      userAccountAddress,
+      fromTokenAddress,
+      componentAddress,
+      fromAmount,
+    });
+
+    console.log(manifest);
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       {isTokenLoading ? (
@@ -118,6 +138,7 @@ export default function TokenPage({
           toToken={token.symbol}
           xrdAmount={tokenAmounts.xrd}
           tokenAmount={tokenAmounts.token}
+          onSubmit={handleSwap}
         />
       )}
 
@@ -142,4 +163,43 @@ export default function TokenPage({
       )}
     </div>
   );
+}
+
+interface CreateSwapRequestParams {
+  userAccountAddress: string;
+  fromTokenAddress: string;
+  componentAddress: string;
+  fromAmount: string;
+}
+
+function createSwapManifest({
+  userAccountAddress,
+  fromTokenAddress,
+  componentAddress,
+  fromAmount,
+}: CreateSwapRequestParams) {
+  return `
+CALL_METHOD
+    Address("${userAccountAddress}")
+    "withdraw"
+    Address("${fromTokenAddress}")
+    Decimal("${fromAmount}")
+;
+TAKE_FROM_WORKTOP
+    Address("${fromTokenAddress}")
+    Decimal("${fromAmount}")
+    Bucket("bucket1")
+;
+CALL_METHOD
+    Address("${componentAddress}")
+    "swap_tokens"
+    Bucket("bucket1")
+;
+CALL_METHOD
+    Address("${userAccountAddress}")
+    "try_deposit_batch_or_refund"
+    Expression("ENTIRE_WORKTOP")
+    Enum<0u8>()
+;
+  `;
 }
