@@ -65,7 +65,7 @@ export default function Deploy() {
         name: coinName,
         address: newResourseAddress!,
         iconUrl: logoUrl,
-        supply: investment,
+        supply: 100000000000,
         componentAddress: newComponentAddress
       }, {
         onError: error => {
